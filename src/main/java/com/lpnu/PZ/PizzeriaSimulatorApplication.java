@@ -20,8 +20,8 @@ public class PizzeriaSimulatorApplication {
         SpringApplication.run(PizzeriaSimulatorApplication.class, args);
 
         Kitchen kitchen = new Kitchen(1);
-        CompletableFuture<Void> voidCompletableFuture = kitchen.processOrder(new Order(List.of(new Pizza(PizzaType.HAWAIIAN, 135, null)), false));
-        voidCompletableFuture.thenRun(() -> log.info("Finished"));
+        CompletableFuture<String> voidCompletableFuture = kitchen.processOrder(new Order(List.of(new Pizza(PizzaType.HAWAIIAN, 135, null)), false));
+        voidCompletableFuture.thenAccept(s -> log.info(s));
     }
 
 }

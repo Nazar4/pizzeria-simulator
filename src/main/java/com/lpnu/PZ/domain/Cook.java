@@ -1,78 +1,78 @@
 package com.lpnu.PZ.domain;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-public class Cook extends Thread {
-    private static int cookCounter = 0;
-    private static int activeCookCount = 0;
-
-    @Getter
-    private CompletableFuture<Void> pizzaCompletableFuture;
-
+public class Cook implements Runnable {
     private Pizza pizza;
     @Getter
-    private final int cookId;
-    @Getter
-    @Setter
     private CookState cookState;
-    private volatile boolean stopped;
+    @Getter
+    private CompletableFuture<String> pizzaCompletableFuture;
+    @Getter
+    private boolean isWorking = false;
+    private boolean stopped;
+    private CountDownLatch pizzaLatch;
 
     public Cook() {
-        this.cookId = generateCookId();
         this.cookState = CookState.ASSEMBLING;
+        this.pizzaLatch = new CountDownLatch(1);
         this.stopped = false;
         pizzaCompletableFuture = new CompletableFuture<>();
     }
 
     @Override
     public void run() {
-        try {
-            activeCookCount++;
-            processPizza();
-        } finally {
-            activeCookCount--;
+        if (stopped) {
+            try {
+                pizzaLatch.await();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
+        processPizza();
     }
 
     public void processPizza() {
         if (pizza == null) {
             throw new IllegalStateException("Pizza must be set before processing.");
         }
-        // Simulate even time distribution for each stage
+        isWorking = true;
+
         for (CookState state : CookState.values()) {
             cookState = state;
             simulateProcessingTime(pizza.getAdjustedTime() / CookState.values().length);
         }
 
-        log.info("Cook " + cookId + " has completed pizza: " + pizza);
-        pizzaCompletableFuture.complete(null);
+        log.info("Cook has completed pizza: " + pizza);
+        isWorking = false;
+        pizzaCompletableFuture.complete("Pizza " + pizza.getPizzaType() + " is completed");
     }
 
-    private void simulateProcessingTime(int timeInMillis) {
+    private void simulateProcessingTime(int timeInSeconds) {
         try {
-            TimeUnit.SECONDS.sleep(timeInMillis);
+            TimeUnit.SECONDS.sleep(timeInSeconds);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
     }
 
-    public void setPizzaAndStart(Pizza pizza) {
+    public void setPizza(Pizza pizza) {
         this.pizza = pizza;
-        start();
     }
 
     public void stopCook() {
         stopped = true;
     }
 
-    private synchronized int generateCookId() {
-        return ++cookCounter;
+    public void resumeCook() {
+        stopped = false;
+        pizzaLatch.countDown();
     }
 }
 

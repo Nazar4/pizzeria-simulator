@@ -9,16 +9,16 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.Optional;
 import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class Kitchen {
-    private final int numberOfCooks;
     private final ExecutorService cookThreadPool;
     private final List<Cook> cooks;
 
     public Kitchen(int numberOfCooks) {
-        this.numberOfCooks = numberOfCooks;
         this.cookThreadPool = Executors.newFixedThreadPool(numberOfCooks);
         this.cooks = new ArrayList<>();
 
@@ -28,45 +28,70 @@ public class Kitchen {
         }
     }
 
-    public CompletableFuture<Void> processOrder(Order order) {
-        CompletableFuture<Void> orderCompletableFuture = new CompletableFuture<>();
+    public CompletableFuture<String> processOrder(final Order order) {
+        int pizzasDoneCounter = 0;
+        int numberOfPizzasInOrder = order.getPizzas().size();
 
-        List<Cook> cooks = getCooksForOrder(order);
-        List<CompletableFuture<Void>> pizzaFutures = new ArrayList<>();
+        CompletableFuture<String> orderCompletableFuture = new CompletableFuture<>();
+        List<CompletableFuture<String>> pizzaFutures = new ArrayList<>();
 
-        for (int i = 0; i < cooks.size(); i++) {
-            Cook cook = cooks.get(i);
-            Pizza pizza = order.getPizzas().get(i);
 
-            cook.setPizzaAndStart(pizza);
+        while (numberOfPizzasInOrder > pizzasDoneCounter) {
+            Cook cook = getAvailableCook();
+            Pizza pizza = order.getPizzas().get(pizzasDoneCounter++);
 
-            CompletableFuture<Void> pizzaFuture = cook.getPizzaCompletableFuture();
-            pizzaFutures.add(pizzaFuture);
+            cook.setPizza(pizza);
+            this.cookThreadPool.submit(cook);
+
+            pizzaFutures.add(cook.getPizzaCompletableFuture());
         }
 
-        CompletableFuture<Void>[] pizzaFuturesArray = new CompletableFuture[pizzaFutures.size()];
-        pizzaFutures.toArray(pizzaFuturesArray);
+        CompletableFuture<Void> allOf = CompletableFuture.allOf(
+                pizzaFutures.toArray(new CompletableFuture[0])
+        );
 
-        CompletableFuture<Void> allOf = CompletableFuture.allOf(pizzaFuturesArray);
+        allOf.thenApply(result -> {
+            List<String> pizzaResults = pizzaFutures.stream()//
+                    .map(CompletableFuture::join)//
+                    .collect(Collectors.toList());
 
-        allOf.thenRun(() -> {
-            log.info("Order completed " + order);
-            orderCompletableFuture.complete(null);
+            String combinedResult = String.join("\n", pizzaResults);
+
+            orderCompletableFuture.complete(combinedResult);
+
+            return null; //just for chain
         });
 
         return orderCompletableFuture;
     }
 
-    private List<Cook> getCooksForOrder(Order order) {
-        return new ArrayList<>(cooks.subList(0, order.getPizzas().size()));
+    private Cook getAvailableCook() {
+        Optional<Cook> availableCook;
+
+        while (true) {
+            availableCook = cooks.stream()
+                    .filter(cook -> !cook.isWorking())
+                    .findAny();
+
+            if (availableCook.isPresent()) {
+                break;
+            } else {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        return availableCook.orElseThrow();
     }
 
     private void processOrderTask(Order order, OrderMode orderMode) {
         //to be implemented
     }
 
-    public void shutdown() {
-        cookThreadPool.shutdown();
-    }
+//    public void shutdown() {
+//        cookThreadPool.shutdown();
+//    }
 }
 
