@@ -4,9 +4,13 @@ import lombok.Getter;
 
 @Getter
 public enum CookState {
-    //maybe for cook state we will have everything we have in order state now
-    COOKING("COOKING"),
-    ON_BREAK("ON BREAK");
+    ASSEMBLING("Assembling"),
+    MAKING_DOUGH("Making dough"),
+    PREPARING_TOPPINGS("Preparing toppings"),
+    BAKING("Baking"),
+    DONE("Done");
+//    COOKING("COOKING"),
+//    ON_BREAK("ON BREAK");
 
     private final String displayValue;
 

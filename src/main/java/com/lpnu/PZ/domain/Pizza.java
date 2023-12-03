@@ -18,6 +18,10 @@ public class Pizza {
         this.ingredients = ingredients;
     }
 
+    public int getAdjustedTime() {
+        return this.pizzaType.getMinutesToCreate();
+    }
+
     public int calculateAdjustedTime(int userMinimumTime) {
         if (userMinimumTime < 10) {
             throw new IllegalArgumentException("Pizza can not be created in less than 10 minutes");
@@ -28,8 +32,8 @@ public class Pizza {
     }
 
     public String toString() {
-        return String.format("Pizza: %s, Price: %.2f, Prepare Time: %d minutes, Ingredients: %s",
-                pizzaType.name(), price, pizzaType.getMinutesToCreate(), String.join(", ", ingredients));
+        return String.format("Pizza: %s, Price: %.2f, Prepare Time: %d minutes",
+                pizzaType.name(), price, pizzaType.getMinutesToCreate()); //String.join(", ", ingredients
     }
 
 }
