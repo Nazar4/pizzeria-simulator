@@ -20,7 +20,7 @@ public class Cook implements Runnable {
     private CountDownLatch pizzaLatch;
 
     public Cook() {
-        this.cookState = CookState.ASSEMBLING;
+        this.cookState = CookState.COOKING;
         this.pizzaLatch = new CountDownLatch(1);
         this.stopped = false;
         pizzaCompletableFuture = new CompletableFuture<>();
@@ -44,9 +44,9 @@ public class Cook implements Runnable {
         }
         isWorking = true;
 
-        for (CookState state : CookState.values()) {
-            cookState = state;
-            simulateProcessingTime(pizza.getAdjustedTime() / CookState.values().length);
+        while (this.pizza.getPizzaState() != PizzaState.DONE) {
+            this.pizza.moveNextState();
+            simulateProcessingTime(pizza.getAdjustedTimeToCreate() / PizzaState.values().length);
         }
 
         log.info("Cook has completed pizza: " + pizza);
@@ -56,7 +56,7 @@ public class Cook implements Runnable {
 
     private void simulateProcessingTime(int timeInSeconds) {
         try {
-            TimeUnit.SECONDS.sleep(timeInSeconds);
+            TimeUnit.MILLISECONDS.sleep(timeInSeconds * 1000L);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -67,10 +67,12 @@ public class Cook implements Runnable {
     }
 
     public void stopCook() {
+        this.cookState = CookState.ON_BREAK;
         stopped = true;
     }
 
     public void resumeCook() {
+        this.cookState = CookState.COOKING;
         stopped = false;
         pizzaLatch.countDown();
     }

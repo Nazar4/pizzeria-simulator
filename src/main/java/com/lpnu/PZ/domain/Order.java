@@ -24,7 +24,7 @@ public class Order implements Comparable<Order> {
         if (withPriority) {
             this.priority = ThreadLocalRandom.current().nextInt(0, 11);
         }
-        totalPrice = pizzas.stream().mapToDouble(Pizza::getPrice).sum();
+        totalPrice = pizzas.stream().mapToDouble(pizza -> pizza.getPizzaType().getPrice()).sum();
     }
 
     @Override

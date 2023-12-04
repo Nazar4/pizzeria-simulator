@@ -1,39 +1,73 @@
 package com.lpnu.PZ.domain;
 
 import lombok.Getter;
-import lombok.Setter;
 
-import java.util.List;
+import java.util.Arrays;
+import java.util.Comparator;
 
-@Getter
-@Setter
 public class Pizza {
+    @Getter
     private PizzaType pizzaType;
-    private double price;
-    private List<String> ingredients;
+    @Getter
+    private PizzaState pizzaState;
+    @Getter
+    private int adjustedTimeToCreate;
 
-    public Pizza(PizzaType pizzaType, double price, List<String> ingredients) {
+    private PizzaType pizzaWithLowestTimeToCreate;
+
+    public Pizza(PizzaType pizzaType) {
         this.pizzaType = pizzaType;
-        this.price = price;
-        this.ingredients = ingredients;
+        this.pizzaState = PizzaState.ASSEMBLING;
+        this.adjustedTimeToCreate = pizzaType.getMinutesToCreate();
     }
 
-    public int getAdjustedTime() {
-        return this.pizzaType.getMinutesToCreate();
-    }
-
-    public int calculateAdjustedTime(int userMinimumTime) {
+    public void setAdjustedTime(int userMinimumTime) {
         if (userMinimumTime < 10) {
-            throw new IllegalArgumentException("Pizza can not be created in less than 10 minutes");
+            throw new IllegalArgumentException("Pizza cannot be created in less than 10 minutes");
         }
-        //todo implement the functionality of assigning userMinimumTime to Pizza with lowest time to create
-        // and adjust all the other Pizza types accordingly
-        return this.getPizzaType().getMinutesToCreate();
+
+        int difference = getDifference(userMinimumTime);
+
+        for (PizzaType pizzaType : PizzaType.values()) {
+            int adjustedTime = Math.max(10, pizzaType.getMinutesToCreate() - difference);
+            pizzaType.setMinutesToCreate(adjustedTime);
+        }
+
+        this.adjustedTimeToCreate = Math.max(10, this.adjustedTimeToCreate - difference);
+    }
+
+    private int getDifference(int userMinimumTime) {
+        if (this.pizzaWithLowestTimeToCreate == null) {
+            this.pizzaWithLowestTimeToCreate =
+                    Arrays.stream(PizzaType.values()).min(Comparator.comparingInt(PizzaType::getMinutesToCreate))
+                            .orElseThrow(() -> new IllegalStateException("No Pizza type configured"));
+        }
+
+        return pizzaWithLowestTimeToCreate.getMinutesToCreate() - userMinimumTime;
+    }
+
+    public void moveNextState() {
+        switch (this.pizzaState) {
+            case ASSEMBLING:
+                this.pizzaState = PizzaState.MAKING_DOUGH;
+                break;
+            case MAKING_DOUGH:
+                this.pizzaState = PizzaState.PREPARING_TOPPINGS;
+                break;
+            case PREPARING_TOPPINGS:
+                this.pizzaState = PizzaState.BAKING;
+                break;
+            case BAKING:
+                this.pizzaState = PizzaState.DONE;
+                break;
+            case DONE:
+                break;
+        }
     }
 
     public String toString() {
         return String.format("Pizza: %s, Price: %.2f, Prepare Time: %d minutes",
-                pizzaType.name(), price, pizzaType.getMinutesToCreate()); //String.join(", ", ingredients
+                pizzaType.name(), pizzaType.getPrice(), this.getAdjustedTimeToCreate());
     }
 
 }
