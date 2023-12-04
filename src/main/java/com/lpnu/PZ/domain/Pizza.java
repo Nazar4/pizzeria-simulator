@@ -46,6 +46,7 @@ public class Pizza {
         return pizzaWithLowestTimeToCreate.getMinutesToCreate() - userMinimumTime;
     }
 
+    //in future maybe it will be better to create separate class for pizza state
     public void moveNextState() {
         switch (this.pizzaState) {
             case ASSEMBLING:
