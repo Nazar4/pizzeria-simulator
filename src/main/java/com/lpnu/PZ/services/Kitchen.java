@@ -111,8 +111,17 @@ public class Kitchen {
         cookThreadPool.shutdown();
     }
 
-    public void stopCookById(final String cookId) {
-        this.cooks.stream().filter(cook -> cook.getCookId().equals(cookId)).findFirst().ifPresent(Cook::stopCook);
+    public boolean stopCookById(final String cookId) {
+        Optional<Cook> cookOptional = this.cooks.stream()
+                .filter(cook -> cook.getCookId().equals(cookId))
+                .findFirst();
+
+        if (cookOptional.isPresent()) {
+            cookOptional.get().stopCook();
+            return true;
+        }
+        
+        return false;
     }
 }
 
