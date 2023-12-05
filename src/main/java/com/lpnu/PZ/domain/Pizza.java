@@ -1,5 +1,6 @@
 package com.lpnu.PZ.domain;
 
+import com.lpnu.PZ.utils.GlobalConstants;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -7,7 +8,7 @@ import java.util.Comparator;
 
 public class Pizza {
     @Getter
-    private PizzaType pizzaType;
+    private final PizzaType pizzaType;
     @Getter
     private PizzaState pizzaState;
     @Getter
@@ -15,25 +16,27 @@ public class Pizza {
 
     private PizzaType pizzaWithLowestTimeToCreate;
 
-    public Pizza(PizzaType pizzaType) {
+    public Pizza(final PizzaType pizzaType) {
         this.pizzaType = pizzaType;
         this.pizzaState = PizzaState.ASSEMBLING;
         this.adjustedTimeToCreate = pizzaType.getMinutesToCreate();
     }
 
     public void setAdjustedTime(int userMinimumTime) {
-        if (userMinimumTime < 10) {
+        if (userMinimumTime < GlobalConstants.MINIMUM_TIME_TO_CREATE_PIZZA) {
             throw new IllegalArgumentException("Pizza cannot be created in less than 10 minutes");
         }
 
         int difference = getDifference(userMinimumTime);
 
         for (PizzaType pizzaType : PizzaType.values()) {
-            int adjustedTime = Math.max(10, pizzaType.getMinutesToCreate() - difference);
+            int adjustedTime = Math.max(GlobalConstants.MINIMUM_TIME_TO_CREATE_PIZZA,
+                    pizzaType.getMinutesToCreate() - difference);
             pizzaType.setMinutesToCreate(adjustedTime);
         }
 
-        this.adjustedTimeToCreate = Math.max(10, this.adjustedTimeToCreate - difference);
+        this.adjustedTimeToCreate = Math.max(GlobalConstants.MINIMUM_TIME_TO_CREATE_PIZZA,
+                this.adjustedTimeToCreate - difference);
     }
 
     private int getDifference(int userMinimumTime) {

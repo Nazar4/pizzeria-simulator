@@ -3,6 +3,7 @@ package com.lpnu.PZ.services;
 import com.lpnu.PZ.domain.Cook;
 import com.lpnu.PZ.domain.Order;
 import com.lpnu.PZ.domain.OrderMode;
+import com.lpnu.PZ.domain.OrderState;
 import com.lpnu.PZ.domain.Pizza;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,13 +19,28 @@ public class Kitchen {
     private final ExecutorService cookThreadPool;
     private final List<Cook> cooks;
 
-    public Kitchen(int numberOfCooks) {
+    private static volatile Kitchen instance;
+
+    private Kitchen(int numberOfCooks) {
         this.cookThreadPool = Executors.newFixedThreadPool(numberOfCooks);
         this.cooks = new ArrayList<>();
 
         for (int i = 0; i < numberOfCooks; i++) {
             Cook cook = new Cook();
             cooks.add(cook);
+        }
+    }
+
+    public static Kitchen getInstance(int numberOfCooks) {
+        Kitchen result = instance;
+        if (result != null) {
+            return result;
+        }
+        synchronized (Kitchen.class) {
+            if (instance == null) {
+                instance = new Kitchen(numberOfCooks);
+            }
+            return instance;
         }
     }
 
@@ -35,7 +51,7 @@ public class Kitchen {
         CompletableFuture<String> orderCompletableFuture = new CompletableFuture<>();
         List<CompletableFuture<String>> pizzaFutures = new ArrayList<>();
 
-
+        order.setOrderState(OrderState.PREPARING_ORDER);
         while (numberOfPizzasInOrder > pizzasDoneCounter) {
             Cook cook = getAvailableCook();
             Pizza pizza = order.getPizzas().get(pizzasDoneCounter++);
@@ -59,6 +75,7 @@ public class Kitchen {
 
             orderCompletableFuture.complete(combinedResult);
 
+            order.setOrderState(OrderState.ORDER_FINISHED);
             return null; //just for chain
         });
 
@@ -90,8 +107,8 @@ public class Kitchen {
         //to be implemented
     }
 
-//    public void shutdown() {
-//        cookThreadPool.shutdown();
-//    }
+    public void shutdown() {
+        cookThreadPool.shutdown();
+    }
 }
 

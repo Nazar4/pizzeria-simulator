@@ -8,15 +8,15 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Order implements Comparable<Order> {
     @Getter
-    @Setter
     private List<Pizza> pizzas;
-    private int priority;
+    @Getter
     private double totalPrice;
     @Getter
     @Setter
     private OrderState orderState;
     @Getter
     private OrderMode orderMode;
+    private int priority;
 
     public Order(List<Pizza> pizzas, boolean withPriority) {
         this.pizzas = pizzas;

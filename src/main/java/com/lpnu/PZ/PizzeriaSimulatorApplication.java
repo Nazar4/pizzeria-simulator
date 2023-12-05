@@ -19,7 +19,7 @@ public class PizzeriaSimulatorApplication {
     public static void main(String[] args) {
         SpringApplication.run(PizzeriaSimulatorApplication.class, args);
 
-        Kitchen kitchen = new Kitchen(1);
+        Kitchen kitchen = Kitchen.getInstance(1);
         CompletableFuture<String> voidCompletableFuture = kitchen.processOrder(new Order(List.of(new Pizza(PizzaType.HAWAIIAN)), false));
         voidCompletableFuture.thenAccept(log::info);
     }
