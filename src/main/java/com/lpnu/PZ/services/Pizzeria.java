@@ -28,4 +28,8 @@ public class Pizzeria {
     public boolean stopCookById(String cookId) {
         return this.kitchen.stopCookById(cookId);
     }
+
+    public boolean resumeCookById(String cookId) {
+        return this.kitchen.resumeCookById(cookId);
+    }
 }

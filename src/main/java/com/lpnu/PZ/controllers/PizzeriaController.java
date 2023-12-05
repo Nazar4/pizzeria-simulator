@@ -32,6 +32,12 @@ public class PizzeriaController {
         return getPizzeria().stopCookById(cookId) ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();
     }
 
+    @PatchMapping("/cooks/{cookId}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> resumeCook(@PathVariable(name = "cookId") final String cookId) {
+        return getPizzeria().resumeCookById(cookId) ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();
+    }
+
     @Autowired()
     public void setPizzeria(Pizzeria pizzeria) {
         this.pizzeria = pizzeria;

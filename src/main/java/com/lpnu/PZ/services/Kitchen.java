@@ -120,7 +120,20 @@ public class Kitchen {
             cookOptional.get().stopCook();
             return true;
         }
-        
+
+        return false;
+    }
+
+    public boolean resumeCookById(final String cookId) {
+        Optional<Cook> cookOptional = this.cooks.stream()
+                .filter(cook -> cook.getCookId().equals(cookId))
+                .findFirst();
+
+        if (cookOptional.isPresent()) {
+            cookOptional.get().resumeCook();
+            return true;
+        }
+
         return false;
     }
 }

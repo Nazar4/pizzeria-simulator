@@ -77,9 +77,11 @@ public class Cook implements Runnable {
     }
 
     public void resumeCook() {
-        this.cookState = CookState.COOKING;
-        stopped = false;
-        pizzaLatch.countDown();
+        if(stopped){
+            this.cookState = CookState.COOKING;
+            stopped = false;
+            pizzaLatch.countDown();
+        }
     }
 }
 
