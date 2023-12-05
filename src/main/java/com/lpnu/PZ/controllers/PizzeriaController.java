@@ -26,13 +26,13 @@ public class PizzeriaController {
         getPizzeria().configurePizzeria(configuration);
     }
 
-    @PatchMapping("/cooks/{cookId}")
+    @PatchMapping("/cooks/{cookId}/stop")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> stopCook(@PathVariable(name = "cookId") final String cookId) {
         return getPizzeria().stopCookById(cookId) ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();
     }
 
-    @PatchMapping("/cooks/{cookId}")
+    @PatchMapping("/cooks/{cookId}/resume")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> resumeCook(@PathVariable(name = "cookId") final String cookId) {
         return getPizzeria().resumeCookById(cookId) ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();
