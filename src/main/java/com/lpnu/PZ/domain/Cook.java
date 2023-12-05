@@ -49,9 +49,9 @@ public class Cook implements Runnable {
         }
         isWorking = true;
 
-        while (this.pizza.getPizzaState() != PizzaState.DONE) {
-            this.pizza.moveNextState();
-            simulateProcessingTime(pizza.getAdjustedTimeToCreate() / PizzaState.values().length);
+        while (!(this.pizza.getPizzaState() instanceof DoneState)) {
+            this.pizza.getPizzaState().moveNextState();
+            simulateProcessingTime(pizza.getAdjustedTimeToCreate() / 5);
         }
 
         log.info("Cook has completed pizza: " + pizza);

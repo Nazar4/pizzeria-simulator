@@ -9,12 +9,21 @@ import java.util.Comparator;
 @Getter
 public class Pizza {
     private final PizzaType pizzaType;
+
+    public PizzaState getPizzaState() {
+        return pizzaState;
+    }
+
     private PizzaState pizzaState;
     private int adjustedTimeToCreate;
 
     public Pizza(final PizzaType pizzaType) {
         this.pizzaType = pizzaType;
-        this.pizzaState = PizzaState.ASSEMBLING;
+        this.pizzaState = new AssemblingState(this);
+    }
+
+    public void changeState(PizzaState state) {
+        this.pizzaState = state;
     }
 
     public void setAdjustedTime(int userMinimumTime) {
@@ -23,26 +32,6 @@ public class Pizza {
         }
 
         this.adjustedTimeToCreate = (int) Math.round(pizzaType.getTimeComplexity() * userMinimumTime);
-    }
-
-    //in future maybe it will be better to create separate class for pizza state
-    public void moveNextState() {
-        switch (this.pizzaState) {
-            case ASSEMBLING:
-                this.pizzaState = PizzaState.MAKING_DOUGH;
-                break;
-            case MAKING_DOUGH:
-                this.pizzaState = PizzaState.PREPARING_TOPPINGS;
-                break;
-            case PREPARING_TOPPINGS:
-                this.pizzaState = PizzaState.BAKING;
-                break;
-            case BAKING:
-                this.pizzaState = PizzaState.DONE;
-                break;
-            case DONE:
-                break;
-        }
     }
 
     public String toString() {
