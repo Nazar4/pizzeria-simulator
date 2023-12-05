@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 public class Cook implements Runnable {
     private Pizza pizza;
     @Getter
-    private int cookId;
+    private String cookId;
     @Getter
     private CookState cookState;
     @Getter
@@ -27,7 +27,7 @@ public class Cook implements Runnable {
         this.cookState = CookState.COOKING;
         this.pizzaLatch = new CountDownLatch(1);
         this.stopped = false;
-        this.cookId = System.currentTimeMillis() + "_" + ThreadLocalRandom.current().nextInt();
+        this.cookId = "Cook" + "_" + System.currentTimeMillis();
         pizzaCompletableFuture = new CompletableFuture<>();
     }
 

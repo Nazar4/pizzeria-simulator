@@ -26,9 +26,9 @@ public class PizzeriaController {
     }
 
     @PatchMapping("/cooks/{cookId}")
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public boolean stopCook(@PathVariable(name = "cookId") final int cookId) {
-        return getPizzeria().stopCookById(cookId);
+    @ResponseStatus(HttpStatus.OK)
+    public void stopCook(@PathVariable(name = "cookId") final String cookId) {
+        getPizzeria().stopCookById(cookId);
     }
 
     @Autowired()

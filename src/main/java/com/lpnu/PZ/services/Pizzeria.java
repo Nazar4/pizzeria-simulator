@@ -25,7 +25,7 @@ public class Pizzeria {
         }
     }
 
-    public boolean stopCookById(int cookId) {
-        return this.kitchen.stopCookById(cookId);
+    public void stopCookById(String cookId) {
+        this.kitchen.stopCookById(cookId);
     }
 }
