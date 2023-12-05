@@ -6,20 +6,15 @@ import lombok.Getter;
 import java.util.Arrays;
 import java.util.Comparator;
 
+@Getter
 public class Pizza {
-    @Getter
     private final PizzaType pizzaType;
-    @Getter
     private PizzaState pizzaState;
-    @Getter
     private int adjustedTimeToCreate;
-
-    private PizzaType pizzaWithLowestTimeToCreate;
 
     public Pizza(final PizzaType pizzaType) {
         this.pizzaType = pizzaType;
         this.pizzaState = PizzaState.ASSEMBLING;
-        this.adjustedTimeToCreate = pizzaType.getMinutesToCreate();
     }
 
     public void setAdjustedTime(int userMinimumTime) {
@@ -27,26 +22,7 @@ public class Pizza {
             throw new IllegalArgumentException("Pizza cannot be created in less than 10 minutes");
         }
 
-        int difference = getDifference(userMinimumTime);
-
-        for (PizzaType pizzaType : PizzaType.values()) {
-            int adjustedTime = Math.max(GlobalConstants.MINIMUM_TIME_TO_CREATE_PIZZA,
-                    pizzaType.getMinutesToCreate() - difference);
-            pizzaType.setMinutesToCreate(adjustedTime);
-        }
-
-        this.adjustedTimeToCreate = Math.max(GlobalConstants.MINIMUM_TIME_TO_CREATE_PIZZA,
-                this.adjustedTimeToCreate - difference);
-    }
-
-    private int getDifference(int userMinimumTime) {
-        if (this.pizzaWithLowestTimeToCreate == null) {
-            this.pizzaWithLowestTimeToCreate =
-                    Arrays.stream(PizzaType.values()).min(Comparator.comparingInt(PizzaType::getMinutesToCreate))
-                            .orElseThrow(() -> new IllegalStateException("No Pizza type configured"));
-        }
-
-        return pizzaWithLowestTimeToCreate.getMinutesToCreate() - userMinimumTime;
+        this.adjustedTimeToCreate = (int) Math.round(pizzaType.getTimeComplexity() * userMinimumTime);
     }
 
     //in future maybe it will be better to create separate class for pizza state
@@ -73,5 +49,4 @@ public class Pizza {
         return String.format("Pizza: %s, Price: %.2f, Prepare Time: %d minutes",
                 pizzaType.name(), pizzaType.getPrice(), this.getAdjustedTimeToCreate());
     }
-
 }

@@ -6,25 +6,21 @@ import lombok.Setter;
 import java.util.Arrays;
 
 public enum PizzaType {
-    MARGHERITA(15, 250),
-    PEPPERONI(20, 200),
-    VEGGIE(18, 175),
-    SUPREME(25, 190),
-    BBQ_CHICKEN(22, 230),
-    HAWAIIAN(18, 220),
-    MEXICAN(23, 210),
-    MUSHROOM_OLIVE(20, 270),
-    FOUR_CHEESE(17, 255),
-    SPINACH_ARTICHOKE(21, 150);
+    MARGHERITA(1),
+    PEPPERONI(1.5),
+    VEGGIE(1.25),
+    SUPREME(1.75),
+    BBQ_CHICKEN(1.8),
+    HAWAIIAN(1.8),
+    MEXICAN(1.8),
+    MUSHROOM_OLIVE(1.5),
+    FOUR_CHEESE(1.25),
+    SPINACH_ARTICHOKE(1.75);
 
     @Getter
-    @Setter
-    private int minutesToCreate;
-    @Getter
-    private final double price;
+    private final double timeComplexity;
 
-    PizzaType(int minutesToCreate, double price) {
-        this.minutesToCreate = minutesToCreate;
-        this.price = price;
+    PizzaType(double timeComplexity) {
+        this.timeComplexity = timeComplexity;
     }
 }
