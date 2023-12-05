@@ -6,6 +6,7 @@ import com.lpnu.PZ.services.Pizzeria;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,8 +28,8 @@ public class PizzeriaController {
 
     @PatchMapping("/cooks/{cookId}")
     @ResponseStatus(HttpStatus.OK)
-    public void stopCook(@PathVariable(name = "cookId") final String cookId) {
-        getPizzeria().stopCookById(cookId);
+    public ResponseEntity<?> stopCook(@PathVariable(name = "cookId") final String cookId) {
+        return getPizzeria().stopCookById(cookId) ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();
     }
 
     @Autowired()
