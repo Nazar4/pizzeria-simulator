@@ -1,18 +1,31 @@
 package com.lpnu.PZ.services;
 
+import com.lpnu.PZ.dto.PizzeriaConfigurationDTO;
+import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Component;
+
+@Component
+@NoArgsConstructor
 public class Pizzeria {
     private Kitchen kitchen;
     private Paydesk paydesk;
     private ClientGenerationStrategy clientGenerationStrategy;
 
-    public Pizzeria(final Kitchen kitchen, final Paydesk paydesk,
-                    final ClientGenerationStrategy clientGenerationStrategy) {
-        this.kitchen = kitchen;
-        this.paydesk = paydesk;
-        this.clientGenerationStrategy = clientGenerationStrategy;
+    public void configurePizzeria(final PizzeriaConfigurationDTO configuration) {
+        this.kitchen = Kitchen.getInstance(configuration.getCooksNumber());
+        this.clientGenerationStrategy = configuration.isRandomGenerationStrategy()
+                ? new RandomGenerationStrategy(configuration.getPizzasNumber()) : new IntervalGenerationStrategy(configuration.getPizzasNumber());
+        this.paydesk = new Paydesk();
+        runPizzeria();
     }
 
     public void runPizzeria() {
+        while (true) {
+            //todo to be implemented
+        }
+    }
 
+    public boolean stopCookById(int cookId) {
+        return this.kitchen.stopCookById(cookId);
     }
 }

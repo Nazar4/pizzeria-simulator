@@ -110,5 +110,9 @@ public class Kitchen {
     public void shutdown() {
         cookThreadPool.shutdown();
     }
+
+    public boolean stopCookById(int cookId) {
+        return this.cooks.stream().filter(cook -> cook.);
+    }
 }
 
