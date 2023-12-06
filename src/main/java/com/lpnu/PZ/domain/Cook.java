@@ -47,7 +47,7 @@ public class Cook implements Runnable {
             throw new IllegalStateException("Pizza must be set before processing.");
         }
         isWorking = true;
-        pizza.setAdjustedTime(12);
+
         while (!this.pizza.isPrepared()) {
             simulateProcessingTime(pizza.getAdjustedTimeToCreate() * this.pizza.getPizzaState().getCompletion());
             this.pizza.getPizzaState().moveNextState();

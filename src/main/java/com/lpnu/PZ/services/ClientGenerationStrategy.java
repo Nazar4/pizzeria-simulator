@@ -13,9 +13,11 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class ClientGenerationStrategy {
     private List<PizzaType> menu;
+    private final int minimumTimeToCreatePizza;
 
-    public ClientGenerationStrategy(final int numberOfPizzasInMenu) {
+    public ClientGenerationStrategy(final int numberOfPizzasInMenu, final int minimumTimeToCreatePizza) {
         this.menu = new ArrayList<>();
+        this.minimumTimeToCreatePizza = minimumTimeToCreatePizza;
         fillMenuRandomly(numberOfPizzasInMenu);
     }
 
@@ -37,8 +39,10 @@ public abstract class ClientGenerationStrategy {
         List<Pizza> pizzas = new ArrayList<>();
 
         for (int i = 0; i < numberOfPizzas; i++) {
-            PizzaType randomPizzaType = this.menu.get(ThreadLocalRandom.current().nextInt(menu.size()));
-            pizzas.add(new Pizza(randomPizzaType));
+            final PizzaType randomPizzaType = this.menu.get(ThreadLocalRandom.current().nextInt(menu.size()));
+            final Pizza pizza = new Pizza(randomPizzaType);
+            pizza.setAdjustedTime(this.minimumTimeToCreatePizza);
+            pizzas.add(pizza);
         }
 
         return new Order(pizzas, ThreadLocalRandom.current().nextBoolean());

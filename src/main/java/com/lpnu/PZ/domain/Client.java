@@ -1,18 +1,13 @@
 package com.lpnu.PZ.domain;
 
 import lombok.Getter;
-import lombok.Setter;
-
-import java.util.Queue;
 
 @Getter
-@Setter
 public class Client {
-    private String clientName;
-    private Order order;
-//    private Queue queue;
+    private final String clientName;
+    private final Order order;
 
-    public Client(String clientName, Order order) {
+    public Client(final String clientName, final Order order) {
         this.clientName = clientName;
         this.order = order;
     }
