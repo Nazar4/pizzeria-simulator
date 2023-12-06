@@ -1,12 +1,11 @@
 package com.lpnu.PZ.domain;
 
+import com.lpnu.PZ.domain.pizza.state.DoneState;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -48,10 +47,10 @@ public class Cook implements Runnable {
             throw new IllegalStateException("Pizza must be set before processing.");
         }
         isWorking = true;
-
-        while (!(this.pizza.getPizzaState() instanceof DoneState)) {
+        pizza.setAdjustedTime(12);
+        while (!this.pizza.isPrepared()) {
+            simulateProcessingTime(pizza.getAdjustedTimeToCreate() * this.pizza.getPizzaState().getCompletion());
             this.pizza.getPizzaState().moveNextState();
-            simulateProcessingTime(pizza.getAdjustedTimeToCreate() / 5);
         }
 
         log.info("Cook has completed pizza: " + pizza);
@@ -59,9 +58,9 @@ public class Cook implements Runnable {
         pizzaCompletableFuture.complete("Pizza " + pizza.getPizzaType() + " is completed");
     }
 
-    private void simulateProcessingTime(int timeInSeconds) {
+    private void simulateProcessingTime(double timeInSeconds) {
         try {
-            TimeUnit.MILLISECONDS.sleep(timeInSeconds * 1000L);
+            TimeUnit.MILLISECONDS.sleep((long) (timeInSeconds * 1000L));
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }

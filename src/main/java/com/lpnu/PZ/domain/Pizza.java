@@ -1,28 +1,26 @@
 package com.lpnu.PZ.domain;
 
+import com.lpnu.PZ.domain.pizza.state.AssemblingState;
+import com.lpnu.PZ.domain.pizza.state.PizzaState;
 import com.lpnu.PZ.utils.GlobalConstants;
 import lombok.Getter;
-
-import java.util.Arrays;
-import java.util.Comparator;
+import lombok.Setter;
 
 @Getter
 public class Pizza {
     private final PizzaType pizzaType;
-
-    public PizzaState getPizzaState() {
-        return pizzaState;
-    }
-
     private PizzaState pizzaState;
-    private int adjustedTimeToCreate;
+    private double adjustedTimeToCreate;
+    @Setter
+    private boolean isPrepared;
 
     public Pizza(final PizzaType pizzaType) {
         this.pizzaType = pizzaType;
+        this.isPrepared = false;
         this.pizzaState = new AssemblingState(this);
     }
 
-    public void changeState(PizzaState state) {
+    public void changeState(final PizzaState state) {
         this.pizzaState = state;
     }
 
@@ -31,11 +29,11 @@ public class Pizza {
             throw new IllegalArgumentException("Pizza cannot be created in less than 10 minutes");
         }
 
-        this.adjustedTimeToCreate = (int) Math.round(pizzaType.getTimeComplexity() * userMinimumTime);
+        this.adjustedTimeToCreate = Math.round(pizzaType.getTimeComplexity() * userMinimumTime);
     }
 
     public String toString() {
-        return String.format("Pizza: %s, Price: %.2f, Prepare Time: %d minutes",
+        return String.format("Pizza: %s, Price: %.2f, Prepare Time: %.2f minutes",
                 pizzaType.name(), pizzaType.getPrice(), this.getAdjustedTimeToCreate());
     }
 }
