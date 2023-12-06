@@ -22,8 +22,14 @@ public class PizzeriaController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void configurePizzeria(@RequestBody final PizzeriaConfigurationDTO configuration) {
-        getPizzeria().configurePizzeria(configuration);
+    public ResponseEntity<?> configurePizzeria(@RequestBody final PizzeriaConfigurationDTO configuration) {
+        if(configuration.isValid()) {
+            getPizzeria().configurePizzeria(configuration);
+            return ResponseEntity.ok(configuration);
+        }
+        else {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PatchMapping("/cooks/{cookId}/stop")

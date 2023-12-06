@@ -11,4 +11,7 @@ public class PizzeriaConfigurationDTO {
     private int minimalPizzaCreationTime;
     private boolean randomGenerationStrategy;
     private boolean intervalGenerationStrategy;
+    public boolean isValid() {
+        return cooksNumber>0&&cooksNumber<128&&pizzasNumber>0&&pizzasNumber<128&&minimalPizzaCreationTime>0&&minimalPizzaCreationTime<32384;
+    }
 }
