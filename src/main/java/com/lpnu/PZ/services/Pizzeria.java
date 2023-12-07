@@ -70,7 +70,7 @@ public class Pizzeria {
                 if (order != null) {
                     CompletableFuture<Order> result = kitchen.processOrder(order);
 
-                    result.thenAcceptAsync(res -> log.info("Order Processed: \n{}", res));
+                    result.thenAccept(res -> log.info("Order Processed: \n{}", res));
                 }
 
                 TimeUnit.MILLISECONDS.sleep(100);

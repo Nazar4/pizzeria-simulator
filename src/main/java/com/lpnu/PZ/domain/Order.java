@@ -6,17 +6,14 @@ import lombok.Setter;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+@Getter
 public class Order implements Comparable<Order> {
-    @Getter
+    @Setter
     private List<Pizza> pizzas;
-    @Getter
-    private double totalPrice;
-    @Getter
+    private final double totalPrice;
     @Setter
     private OrderState orderState;
-    @Getter
     private OrderMode orderMode;
-    @Getter
     private int priority;
 
     public Order(List<Pizza> pizzas, boolean withPriority) {

@@ -2,6 +2,7 @@ package com.lpnu.PZ.domain;
 
 import com.lpnu.PZ.domain.pizza.state.DoneState;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.Instant;
@@ -13,19 +14,21 @@ import java.util.concurrent.TimeUnit;
 public class Cook implements Runnable {
     private Pizza pizza;
     @Getter
-    private String cookId;
+    private final String cookId;
     @Getter
     private CookState cookState;
     @Getter
     private final CompletableFuture<Pizza> pizzaCompletableFuture;
     @Getter
-    private boolean isWorking = false;
+    @Setter
+    private boolean isWorking;
     private boolean stopped;
     private final CountDownLatch pizzaLatch;
 
     public Cook() {
         this.cookState = CookState.COOKING;
         this.pizzaLatch = new CountDownLatch(1);
+        this.isWorking = false;
         this.stopped = false;
         this.cookId = "Cook" + "_" + Instant.now().toEpochMilli();;
         pizzaCompletableFuture = new CompletableFuture<>();
@@ -33,6 +36,7 @@ public class Cook implements Runnable {
 
     @Override
     public void run() {
+        isWorking = true;
         if (stopped) {
             try {
                 pizzaLatch.await();
@@ -41,13 +45,13 @@ public class Cook implements Runnable {
             }
         }
         processPizza();
+        isWorking = false;
     }
 
     public void processPizza() {
         if (pizza == null) {
             throw new IllegalStateException("Pizza must be set before processing.");
         }
-        isWorking = true;
 
         while (!this.pizza.isPrepared()) {
             simulateProcessingTime(pizza.getAdjustedTimeToCreate() * this.pizza.getPizzaState().getCompletion());
@@ -55,7 +59,6 @@ public class Cook implements Runnable {
         }
 
         log.info("Cook has completed pizza: " + pizza);
-        isWorking = false;
         pizzaCompletableFuture.complete(pizza);
     }
 
@@ -67,7 +70,7 @@ public class Cook implements Runnable {
         }
     }
 
-    public void setPizza(Pizza pizza) {
+    public void setPizza(final Pizza pizza) {
         this.pizza = pizza;
     }
 

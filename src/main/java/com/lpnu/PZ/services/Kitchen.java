@@ -49,11 +49,15 @@ public class Kitchen {
         List<CompletableFuture<Pizza>> pizzaFutures = new ArrayList<>();
 
         order.setOrderState(OrderState.PREPARING_ORDER);
-        for  (final Pizza pizza : order.getPizzas()) {
+        for (final Pizza pizza : order.getPizzas()) {
             Cook cook = getAvailableCook();
-            cook.setPizza(pizza);
+            Cook finalCook = cook; // Final variable to be used in lambda
 
-            this.cookThreadPool.submit(cook);
+            Pizza cookPizza = new Pizza(pizza.getPizzaType());
+            cookPizza.setAdjustedTimeToCreate(pizza.getAdjustedTimeToCreate());
+
+            finalCook.setPizza(cookPizza);
+            this.cookThreadPool.submit(finalCook);
 
             pizzaFutures.add(cook.getPizzaCompletableFuture());
         }
@@ -61,22 +65,29 @@ public class Kitchen {
         return CompletableFuture.allOf(
                 pizzaFutures.toArray(new CompletableFuture[0])
         ).thenApply(result -> {
+            List<Pizza> pizzaResults = pizzaFutures.stream()//
+                    .map(CompletableFuture::join)// collect each pizza here
+                    .toList();
+            order.setPizzas(pizzaResults);
             order.setOrderState(OrderState.ORDER_FINISHED);
             orderCompletableFuture.complete(order);
             return order; //for chain
         });
     }
 
-    private Cook getAvailableCook() {
-        Optional<Cook> availableCook;
+    private synchronized Cook getAvailableCook() {
+        Optional<Cook> availableCookOptional;
+        Cook availableCook;
 
-        while (true) {
-            availableCook = cooks.stream()
+        while (!Thread.currentThread().isInterrupted()) {
+            availableCookOptional = cooks.stream()
                     .filter(cook -> !cook.isWorking())
                     .findAny();
 
-            if (availableCook.isPresent()) {
-                break;
+            if (availableCookOptional.isPresent()) {
+                availableCook = availableCookOptional.get();
+                availableCook.setWorking(true);
+                return availableCook;
             } else {
                 try {
                     TimeUnit.MILLISECONDS.sleep(100);
@@ -85,7 +96,7 @@ public class Kitchen {
                 }
             }
         }
-        return availableCook.orElseThrow();
+        throw new IllegalStateException("Unhandled situation to recover");
     }
 
     public void shutdown() {

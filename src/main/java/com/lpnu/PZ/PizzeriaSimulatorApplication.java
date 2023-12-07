@@ -28,9 +28,6 @@ public class PizzeriaSimulatorApplication {
         pizzeriaConfigurationDTO.setIntervalGenerationStrategy(true);
         Pizzeria pizzeria = new Pizzeria();
         pizzeria.configurePizzeria(pizzeriaConfigurationDTO);
-//        Kitchen kitchen = Kitchen.getInstance(1);
-//        CompletableFuture<String> voidCompletableFuture = kitchen.processOrder(new Order(List.of(new Pizza(PizzaType.HAWAIIAN)), false));
-//        voidCompletableFuture.thenAccept(log::info);
     }
 
 }
