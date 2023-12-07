@@ -44,42 +44,27 @@ public class Kitchen {
         }
     }
 
-    public CompletableFuture<String> processOrder(final Order order) {
-        int pizzasDoneCounter = 0;
-        int numberOfPizzasInOrder = order.getPizzas().size();
-
-        CompletableFuture<String> orderCompletableFuture = new CompletableFuture<>();
-        List<CompletableFuture<String>> pizzaFutures = new ArrayList<>();
+    public CompletableFuture<Order> processOrder(final Order order) {
+        CompletableFuture<Order> orderCompletableFuture = new CompletableFuture<>();
+        List<CompletableFuture<Pizza>> pizzaFutures = new ArrayList<>();
 
         order.setOrderState(OrderState.PREPARING_ORDER);
-        while (numberOfPizzasInOrder > pizzasDoneCounter) {
+        for  (final Pizza pizza : order.getPizzas()) {
             Cook cook = getAvailableCook();
-            Pizza pizza = order.getPizzas().get(pizzasDoneCounter++);
-
             cook.setPizza(pizza);
+
             this.cookThreadPool.submit(cook);
 
             pizzaFutures.add(cook.getPizzaCompletableFuture());
         }
 
-        CompletableFuture<Void> allOf = CompletableFuture.allOf(
+        return CompletableFuture.allOf(
                 pizzaFutures.toArray(new CompletableFuture[0])
-        );
-
-        allOf.thenApply(result -> {
-            List<String> pizzaResults = pizzaFutures.stream()//
-                    .map(CompletableFuture::join)//
-                    .collect(Collectors.toList());
-
-            String combinedResult = String.join("\n", pizzaResults);
-
-            orderCompletableFuture.complete(combinedResult);
-
+        ).thenApply(result -> {
             order.setOrderState(OrderState.ORDER_FINISHED);
-            return null; //just for chain
+            orderCompletableFuture.complete(order);
+            return order; //for chain
         });
-
-        return orderCompletableFuture;
     }
 
     private Cook getAvailableCook() {
@@ -94,17 +79,13 @@ public class Kitchen {
                 break;
             } else {
                 try {
-                    Thread.sleep(100);
+                    TimeUnit.MILLISECONDS.sleep(100);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
             }
         }
         return availableCook.orElseThrow();
-    }
-
-    private void processOrderTask(Order order, OrderMode orderMode) {
-        //to be implemented
     }
 
     public void shutdown() {

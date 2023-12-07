@@ -32,8 +32,9 @@ public class Pizza {
         this.adjustedTimeToCreate = Math.round(pizzaType.getTimeComplexity() * userMinimumTime);
     }
 
+    @Override
     public String toString() {
-        return String.format("Pizza: %s, Price: %.2f, Prepare Time: %.2f minutes",
-                pizzaType.name(), pizzaType.getPrice(), this.getAdjustedTimeToCreate());
+        return String.format("Pizza: %s, Price: %.2f, Prepare Time: %.2f minutes, Prepared: %b",
+                pizzaType.name(), pizzaType.getPrice(), this.getAdjustedTimeToCreate(), isPrepared);
     }
 }

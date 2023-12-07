@@ -12,6 +12,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 @Component
 @NoArgsConstructor
@@ -35,15 +36,15 @@ public class Pizzeria {
         ExecutorService orderProcessorThreadPool = Executors.newFixedThreadPool(2);
 
         clientGeneratorThreadPool.submit(() -> {
-            while (true) {
+            while (!Thread.currentThread().isInterrupted()) {
                 try {
                     final Client client = clientGenerationStrategy.generateClient();
                     paydesk.getClients().add(client);
 
-                    if (ThreadLocalRandom.current().nextBoolean()) {
-                        paydesk.getOrdinaryQueue().add(client.getOrder());
-                    } else {
+                    if (client.getOrder().getPriority() > 0) {
                         paydesk.getPriorityQueue().add(client.getOrder());
+                    } else {
+                        paydesk.getOrdinaryQueue().add(client.getOrder());
                     }
 
                     int sleepTime = clientGenerationStrategy instanceof RandomGenerationStrategy
@@ -63,16 +64,16 @@ public class Pizzeria {
     }
 
     private void processOrders(final Queue<Order> queue) {
-        while (true) {
+        while (!Thread.currentThread().isInterrupted()) {
             try {
                 final Order order = queue.poll();
                 if (order != null) {
-                    CompletableFuture<String> result = kitchen.processOrder(order);
+                    CompletableFuture<Order> result = kitchen.processOrder(order);
 
-                    result.thenAcceptAsync(res -> log.info("Order Processed: {}", res));
+                    result.thenAcceptAsync(res -> log.info("Order Processed: \n{}", res));
                 }
 
-                Thread.sleep(100);
+                TimeUnit.MILLISECONDS.sleep(100);
             } catch (InterruptedException e) {
                 log.error("Error in order processing thread: {}", e.getMessage());
                 Thread.currentThread().interrupt();

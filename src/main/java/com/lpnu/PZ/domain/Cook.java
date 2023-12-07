@@ -4,6 +4,7 @@ import com.lpnu.PZ.domain.pizza.state.DoneState;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.Instant;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -16,17 +17,17 @@ public class Cook implements Runnable {
     @Getter
     private CookState cookState;
     @Getter
-    private CompletableFuture<String> pizzaCompletableFuture;
+    private final CompletableFuture<Pizza> pizzaCompletableFuture;
     @Getter
     private boolean isWorking = false;
     private boolean stopped;
-    private CountDownLatch pizzaLatch;
+    private final CountDownLatch pizzaLatch;
 
     public Cook() {
         this.cookState = CookState.COOKING;
         this.pizzaLatch = new CountDownLatch(1);
         this.stopped = false;
-        this.cookId = "Cook" + "_" + System.currentTimeMillis();
+        this.cookId = "Cook" + "_" + Instant.now().toEpochMilli();;
         pizzaCompletableFuture = new CompletableFuture<>();
     }
 
@@ -55,7 +56,7 @@ public class Cook implements Runnable {
 
         log.info("Cook has completed pizza: " + pizza);
         isWorking = false;
-        pizzaCompletableFuture.complete("Pizza " + pizza.getPizzaType() + " is completed");
+        pizzaCompletableFuture.complete(pizza);
     }
 
     private void simulateProcessingTime(double timeInSeconds) {
@@ -76,7 +77,7 @@ public class Cook implements Runnable {
     }
 
     public void resumeCook() {
-        if(stopped){
+        if (stopped) {
             this.cookState = CookState.COOKING;
             stopped = false;
             pizzaLatch.countDown();

@@ -23,7 +23,7 @@ public class PizzeriaController {
     @PostMapping
     @ResponseStatus(HttpStatus.ACCEPTED)
     public ResponseEntity<?> configurePizzeria(@RequestBody final PizzeriaConfigurationDTO configuration) {
-        if(configuration.isValid()) {
+        if (configuration.isValid()) {
             getPizzeria().configurePizzeria(configuration);
             return ResponseEntity.ok(configuration);
         }

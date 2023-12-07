@@ -1,5 +1,8 @@
 package com.lpnu.PZ.dto;
 
+import com.lpnu.PZ.domain.Pizza;
+import com.lpnu.PZ.domain.PizzaType;
+import com.lpnu.PZ.utils.GlobalConstants;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,7 +14,11 @@ public class PizzeriaConfigurationDTO {
     private int minimalPizzaCreationTime;
     private boolean randomGenerationStrategy;
     private boolean intervalGenerationStrategy;
+
     public boolean isValid() {
-        return cooksNumber>0&&cooksNumber<128&&pizzasNumber>0&&pizzasNumber<128&&minimalPizzaCreationTime>0&&minimalPizzaCreationTime<32384;
+        return cooksNumber > 0 && cooksNumber < GlobalConstants.MAX_COOKS_NUMBER
+                && pizzasNumber > 0 && pizzasNumber < PizzaType.values().length
+                && minimalPizzaCreationTime > GlobalConstants.MINIMUM_TIME_TO_CREATE_PIZZA
+                && minimalPizzaCreationTime < GlobalConstants.MAXIMUM_TIME_TO_CREATE_PIZZA;
     }
 }

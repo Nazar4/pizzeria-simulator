@@ -23,7 +23,7 @@ public class PizzeriaSimulatorApplication {
 
         final var pizzeriaConfigurationDTO = new PizzeriaConfigurationDTO();
         pizzeriaConfigurationDTO.setCooksNumber(8);
-        pizzeriaConfigurationDTO.setPizzasNumber(4);
+        pizzeriaConfigurationDTO.setPizzasNumber(8);
         pizzeriaConfigurationDTO.setMinimalPizzaCreationTime(13);
         pizzeriaConfigurationDTO.setIntervalGenerationStrategy(true);
         Pizzeria pizzeria = new Pizzeria();
