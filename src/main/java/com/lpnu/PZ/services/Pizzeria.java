@@ -1,6 +1,5 @@
 package com.lpnu.PZ.services;
 
-import com.lpnu.PZ.domain.Client;
 import com.lpnu.PZ.domain.Order;
 import com.lpnu.PZ.dto.PizzeriaConfigurationDTO;
 import lombok.NoArgsConstructor;
@@ -11,7 +10,6 @@ import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -30,33 +28,9 @@ public class Pizzeria {
     }
 
     public void runPizzeria() {
-//        ExecutorService clientGeneratorThreadPool = Executors.newSingleThreadExecutor();
         final ExecutorService orderProcessorThreadPool = Executors.newFixedThreadPool(2);
 
         clientGenerationStrategy.generateClientWithInterval();
-//        clientGeneratorThreadPool.submit(() -> {
-//            while (!Thread.currentThread().isInterrupted()) {
-//                try {
-//                    final Client client = clientGenerationStrategy.generateClient();
-//                    paydesk.getClients().add(client);
-//
-//                    if (client.getOrder().getPriority() > 0) {
-//                        paydesk.getPriorityQueue().add(client.getOrder());
-//                    } else {
-//                        paydesk.getOrdinaryQueue().add(client.getOrder());
-//                    }
-//
-//                    int sleepTime = clientGenerationStrategy instanceof RandomGenerationStrategy
-//                            ? ThreadLocalRandom.current().nextInt(10, 21)
-//                            : 15;
-//
-//                    TimeUnit.MILLISECONDS.sleep(sleepTime * 1000L);
-//                } catch (InterruptedException e) {
-//                    log.error("Error in client generation thread: {}", e.getMessage());
-//                    Thread.currentThread().interrupt();
-//                }
-//            }
-//        });
 
         orderProcessorThreadPool.submit(() -> processOrders(clientGenerationStrategy.getPaydesk().getOrdinaryQueue()));
         orderProcessorThreadPool.submit(() -> processOrders(clientGenerationStrategy.getPaydesk().getPriorityQueue()));

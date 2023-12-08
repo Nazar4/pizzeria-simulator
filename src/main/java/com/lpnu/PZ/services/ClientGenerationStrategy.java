@@ -12,7 +12,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class ClientGenerationStrategy {
@@ -23,6 +22,8 @@ public abstract class ClientGenerationStrategy {
     @Getter
     private ExecutorService clientGeneratorThreadPool;
 
+    public static int clientId = 0;
+
     public ClientGenerationStrategy(final int numberOfPizzasInMenu, final int minimumTimeToCreatePizza) {
         this.menu = new ArrayList<>();
         this.minimumTimeToCreatePizza = minimumTimeToCreatePizza;
@@ -31,11 +32,14 @@ public abstract class ClientGenerationStrategy {
         fillMenuRandomly(numberOfPizzasInMenu);
     }
 
-    public abstract Client generateClient();
+    public Client generateClient() {
+        Order order = generateRandomOrder();
+        return new Client("Client_" + (clientId++), order);
+    }
 
     public abstract void generateClientWithInterval();
 
-    protected void addToAppropriateQueue(Client client) {
+    protected void addToAppropriateQueue(final Client client) {
         paydesk.getClients().add(client);
 
         if (client.getOrder().getPriority() > 0) {
@@ -53,7 +57,7 @@ public abstract class ClientGenerationStrategy {
         }
 
         Collections.shuffle(allPizzaTypes);
-        this.menu = new ArrayList<>(allPizzaTypes.subList(0, numberOfPizzas));;
+        this.menu = new ArrayList<>(allPizzaTypes.subList(0, numberOfPizzas));
     }
 
     public Order generateRandomOrder() {

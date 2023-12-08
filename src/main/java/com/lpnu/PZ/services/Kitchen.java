@@ -51,13 +51,9 @@ public class Kitchen {
         order.setOrderState(OrderState.PREPARING_ORDER);
         for (final Pizza pizza : order.getPizzas()) {
             Cook cook = getAvailableCook();
-            Cook finalCook = cook; // Final variable to be used in lambda
 
-            Pizza cookPizza = new Pizza(pizza.getPizzaType());
-            cookPizza.setAdjustedTimeToCreate(pizza.getAdjustedTimeToCreate());
-
-            finalCook.setPizza(cookPizza);
-            this.cookThreadPool.submit(finalCook);
+            cook.setPizza(pizza);
+            this.cookThreadPool.submit(cook);
 
             pizzaFutures.add(cook.getPizzaCompletableFuture());
         }
@@ -65,10 +61,6 @@ public class Kitchen {
         return CompletableFuture.allOf(
                 pizzaFutures.toArray(new CompletableFuture[0])
         ).thenApply(result -> {
-            List<Pizza> pizzaResults = pizzaFutures.stream()//
-                    .map(CompletableFuture::join)// collect each pizza here
-                    .toList();
-            order.setPizzas(pizzaResults);
             order.setOrderState(OrderState.ORDER_FINISHED);
             orderCompletableFuture.complete(order);
             return order; //for chain
