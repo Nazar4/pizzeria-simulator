@@ -18,17 +18,18 @@ import java.util.concurrent.TimeUnit;
 public class Pizzeria {
     private Kitchen kitchen;
     private ClientGenerationStrategy clientGenerationStrategy;
+    private ExecutorService orderProcessorThreadPool;
 
     public void configurePizzeria(final PizzeriaConfigurationDTO configuration) {
         this.kitchen = Kitchen.getInstance(configuration.getCooksNumber());
         this.clientGenerationStrategy = configuration.isRandomGenerationStrategy()
                 ? new RandomGenerationStrategy(configuration.getPizzasNumber(), configuration.getMinimalPizzaCreationTime())
                 : new IntervalGenerationStrategy(configuration.getPizzasNumber(), configuration.getMinimalPizzaCreationTime());
+        this.orderProcessorThreadPool = Executors.newFixedThreadPool(2);
         runPizzeria();
     }
 
     public void runPizzeria() {
-        final ExecutorService orderProcessorThreadPool = Executors.newFixedThreadPool(2);
 
         clientGenerationStrategy.generateClientWithInterval();
 
@@ -61,4 +62,11 @@ public class Pizzeria {
     public boolean resumeCookById(String cookId) {
         return this.kitchen.resumeCookById(cookId);
     }
+
+    public void shutdown() {
+        this.orderProcessorThreadPool.shutdown();
+        this.kitchen.shutdown();
+        this.clientGenerationStrategy.shutdown();
+    }
+
 }

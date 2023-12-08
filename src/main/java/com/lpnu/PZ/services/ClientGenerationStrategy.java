@@ -74,4 +74,8 @@ public abstract class ClientGenerationStrategy {
         return new Order(pizzas, ThreadLocalRandom.current().nextBoolean());
     }
 
+    public void shutdown() {
+        this.clientGeneratorThreadPool.shutdown();
+    }
+
 }

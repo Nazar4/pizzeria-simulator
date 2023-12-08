@@ -28,6 +28,12 @@ public class PizzeriaSimulatorApplication {
         pizzeriaConfigurationDTO.setIntervalGenerationStrategy(true);
         Pizzeria pizzeria = new Pizzeria();
         pizzeria.configurePizzeria(pizzeriaConfigurationDTO);
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            log.info("Shutting down gracefully...");
+            pizzeria.shutdown();
+            log.info("Graceful shutdown completed.");
+        }));
     }
 
 }
