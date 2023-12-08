@@ -1,7 +1,6 @@
 package com.lpnu.PZ.services;
 
 import com.lpnu.PZ.domain.Client;
-import com.lpnu.PZ.domain.Order;
 import com.lpnu.PZ.utils.GlobalConstants;
 import lombok.extern.slf4j.Slf4j;
 
