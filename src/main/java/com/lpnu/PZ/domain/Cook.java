@@ -18,7 +18,7 @@ public class Cook implements Runnable {
     @Getter
     private CookState cookState;
     @Getter
-    private final CompletableFuture<Pizza> pizzaCompletableFuture;
+    private CompletableFuture<Pizza> pizzaCompletableFuture;
     @Getter
     @Setter
     private boolean isWorking;
@@ -30,13 +30,13 @@ public class Cook implements Runnable {
         this.pizzaLatch = new CountDownLatch(1);
         this.isWorking = false;
         this.stopped = false;
-        this.cookId = "Cook" + "_" + Instant.now().toEpochMilli();;
+        this.cookId = "Cook" + "_" + Instant.now().toEpochMilli();
+        log.info(cookId + " created");
         pizzaCompletableFuture = new CompletableFuture<>();
     }
 
     @Override
     public void run() {
-        isWorking = true;
         if (stopped) {
             try {
                 pizzaLatch.await();
@@ -72,6 +72,9 @@ public class Cook implements Runnable {
 
     public void setPizza(final Pizza pizza) {
         this.pizza = pizza;
+        if (pizzaCompletableFuture.isDone()) {
+            pizzaCompletableFuture = new CompletableFuture<>();
+        }
     }
 
     public void stopCook() {
