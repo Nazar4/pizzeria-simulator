@@ -1,14 +1,13 @@
 package com.lpnu.PZ.domain;
 
-import com.lpnu.PZ.domain.pizza.state.DoneState;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.time.Instant;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Slf4j
 public class Cook implements Runnable {
@@ -24,13 +23,14 @@ public class Cook implements Runnable {
     private boolean isWorking;
     private boolean stopped;
     private final CountDownLatch pizzaLatch;
+    private static AtomicLong cookIdCounter = new AtomicLong(0);
 
     public Cook() {
         this.cookState = CookState.COOKING;
         this.pizzaLatch = new CountDownLatch(1);
         this.isWorking = false;
         this.stopped = false;
-        this.cookId = "Cook" + "_" + Instant.now().toEpochMilli();
+        this.cookId = "Cook" + "_" + cookIdCounter.getAndIncrement();
         log.info(cookId + " created");
         pizzaCompletableFuture = new CompletableFuture<>();
     }
