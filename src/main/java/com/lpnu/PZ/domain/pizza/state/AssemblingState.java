@@ -6,6 +6,7 @@ public class AssemblingState extends PizzaState {
 
     public AssemblingState(final Pizza pizza) {
         super(pizza);
+        pizza.getLog().logStart();
     }
 
     @Override

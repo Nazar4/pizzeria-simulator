@@ -6,6 +6,7 @@ public class DoneState extends PizzaState {
 
     public DoneState(final Pizza pizza) {
         super(pizza);
+        pizza.getLog().logEnd();
     }
 
     @Override

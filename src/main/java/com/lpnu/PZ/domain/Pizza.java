@@ -10,6 +10,7 @@ import lombok.Setter;
 public class Pizza {
     private final PizzaType pizzaType;
     private PizzaState pizzaState;
+    private PizzaLog log;
     @Setter
     private double adjustedTimeToCreate;
     @Setter
