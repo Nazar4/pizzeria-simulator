@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController("/pizzeria")
+@RestController
 public class PizzeriaController {
 
     @Getter
     private Pizzeria pizzeria;
 
-    @PostMapping
+    @PostMapping("/pizzeria")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public ResponseEntity<?> configurePizzeria(@RequestBody final PizzeriaConfigurationDTO configuration) {
         if (configuration.isValid()) {
@@ -32,13 +32,13 @@ public class PizzeriaController {
         }
     }
 
-    @PatchMapping("/cooks/{cookId}/stop")
+    @PatchMapping("/pizzeria/cooks/{cookId}/stop")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> stopCook(@PathVariable(name = "cookId") final String cookId) {
         return getPizzeria().stopCookById(cookId) ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();
     }
 
-    @PatchMapping("/cooks/{cookId}/resume")
+    @PatchMapping("/pizzeria/cooks/{cookId}/resume")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> resumeCook(@PathVariable(name = "cookId") final String cookId) {
         return getPizzeria().resumeCookById(cookId) ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();
