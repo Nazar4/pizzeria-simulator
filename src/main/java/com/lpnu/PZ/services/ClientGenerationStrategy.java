@@ -5,23 +5,45 @@ import com.lpnu.PZ.domain.Order;
 import com.lpnu.PZ.domain.Pizza;
 import com.lpnu.PZ.domain.PizzaType;
 import com.lpnu.PZ.utils.GlobalConstants;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class ClientGenerationStrategy {
     private List<PizzaType> menu;
     private final int minimumTimeToCreatePizza;
+    @Getter
+    private final Paydesk paydesk;
+    @Getter
+    private ExecutorService clientGeneratorThreadPool;
 
     public ClientGenerationStrategy(final int numberOfPizzasInMenu, final int minimumTimeToCreatePizza) {
         this.menu = new ArrayList<>();
         this.minimumTimeToCreatePizza = minimumTimeToCreatePizza;
+        this.paydesk = new Paydesk();
+        this.clientGeneratorThreadPool = Executors.newSingleThreadExecutor();
         fillMenuRandomly(numberOfPizzasInMenu);
     }
 
     public abstract Client generateClient();
+
+    public abstract void generateClientWithInterval();
+
+    protected void addToAppropriateQueue(Client client) {
+        paydesk.getClients().add(client);
+
+        if (client.getOrder().getPriority() > 0) {
+            paydesk.getPriorityQueue().add(client.getOrder());
+        } else {
+            paydesk.getOrdinaryQueue().add(client.getOrder());
+        }
+    }
 
     private void fillMenuRandomly(int numberOfPizzas) {
         List<PizzaType> allPizzaTypes = new ArrayList<>(List.of(PizzaType.values()));

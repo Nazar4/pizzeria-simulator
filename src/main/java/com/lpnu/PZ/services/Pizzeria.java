@@ -19,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class Pizzeria {
     private Kitchen kitchen;
-    private Paydesk paydesk;
     private ClientGenerationStrategy clientGenerationStrategy;
 
     public void configurePizzeria(final PizzeriaConfigurationDTO configuration) {
@@ -27,40 +26,40 @@ public class Pizzeria {
         this.clientGenerationStrategy = configuration.isRandomGenerationStrategy()
                 ? new RandomGenerationStrategy(configuration.getPizzasNumber(), configuration.getMinimalPizzaCreationTime())
                 : new IntervalGenerationStrategy(configuration.getPizzasNumber(), configuration.getMinimalPizzaCreationTime());
-        this.paydesk = new Paydesk();
         runPizzeria();
     }
 
     public void runPizzeria() {
-        ExecutorService clientGeneratorThreadPool = Executors.newSingleThreadExecutor();
-        ExecutorService orderProcessorThreadPool = Executors.newFixedThreadPool(2);
+//        ExecutorService clientGeneratorThreadPool = Executors.newSingleThreadExecutor();
+        final ExecutorService orderProcessorThreadPool = Executors.newFixedThreadPool(2);
 
-        clientGeneratorThreadPool.submit(() -> {
-            while (!Thread.currentThread().isInterrupted()) {
-                try {
-                    final Client client = clientGenerationStrategy.generateClient();
-                    paydesk.getClients().add(client);
+        clientGenerationStrategy.generateClientWithInterval();
+//        clientGeneratorThreadPool.submit(() -> {
+//            while (!Thread.currentThread().isInterrupted()) {
+//                try {
+//                    final Client client = clientGenerationStrategy.generateClient();
+//                    paydesk.getClients().add(client);
+//
+//                    if (client.getOrder().getPriority() > 0) {
+//                        paydesk.getPriorityQueue().add(client.getOrder());
+//                    } else {
+//                        paydesk.getOrdinaryQueue().add(client.getOrder());
+//                    }
+//
+//                    int sleepTime = clientGenerationStrategy instanceof RandomGenerationStrategy
+//                            ? ThreadLocalRandom.current().nextInt(10, 21)
+//                            : 15;
+//
+//                    TimeUnit.MILLISECONDS.sleep(sleepTime * 1000L);
+//                } catch (InterruptedException e) {
+//                    log.error("Error in client generation thread: {}", e.getMessage());
+//                    Thread.currentThread().interrupt();
+//                }
+//            }
+//        });
 
-                    if (client.getOrder().getPriority() > 0) {
-                        paydesk.getPriorityQueue().add(client.getOrder());
-                    } else {
-                        paydesk.getOrdinaryQueue().add(client.getOrder());
-                    }
-
-                    int sleepTime = clientGenerationStrategy instanceof RandomGenerationStrategy
-                            ? ThreadLocalRandom.current().nextInt(10, 21)
-                            : 15;
-
-                    Thread.sleep(sleepTime * 1000L);
-                } catch (InterruptedException e) {
-                    log.error("Error in client generation thread: {}", e.getMessage());
-                    Thread.currentThread().interrupt();
-                }
-            }
-        });
-
-        orderProcessorThreadPool.submit(() -> processOrders(paydesk.getOrdinaryQueue()));
-        orderProcessorThreadPool.submit(() -> processOrders(paydesk.getPriorityQueue()));
+        orderProcessorThreadPool.submit(() -> processOrders(clientGenerationStrategy.getPaydesk().getOrdinaryQueue()));
+        orderProcessorThreadPool.submit(() -> processOrders(clientGenerationStrategy.getPaydesk().getPriorityQueue()));
     }
 
     private void processOrders(final Queue<Order> queue) {
