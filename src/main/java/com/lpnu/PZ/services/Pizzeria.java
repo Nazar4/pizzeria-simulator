@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -30,7 +31,6 @@ public class Pizzeria {
     }
 
     public void runPizzeria() {
-
         clientGenerationStrategy.generateClientWithInterval();
 
         orderProcessorThreadPool.submit(() -> processOrders(clientGenerationStrategy.getPaydesk().getOrdinaryQueue()));
@@ -40,11 +40,13 @@ public class Pizzeria {
     private void processOrders(final Queue<Order> queue) {
         while (!Thread.currentThread().isInterrupted()) {
             try {
-                final Order order = queue.poll();
-                if (order != null) {
-                    CompletableFuture<Order> result = kitchen.processOrder(order);
+                if (kitchen.hasAvailableCook()) { //to address backpressure issue
+                    final Order order = queue.poll();
+                    if (order != null) {
+                        CompletableFuture<Order> result = kitchen.processOrder(order);
 
-                    result.thenAccept(res -> log.info("Order Processed: \n{}", res));
+                        result.thenAccept(res -> log.info("Order Processed: \n{}", res));
+                    }
                 }
 
                 TimeUnit.MILLISECONDS.sleep(100);

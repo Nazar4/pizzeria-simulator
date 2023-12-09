@@ -91,6 +91,10 @@ public class Kitchen {
         throw new IllegalStateException("Unhandled situation to recover");
     }
 
+    public boolean hasAvailableCook() {
+        return cooks.stream().anyMatch(cook -> !cook.isWorking());
+    }
+
     public void shutdown() {
         cookThreadPool.shutdown();
     }

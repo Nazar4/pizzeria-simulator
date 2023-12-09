@@ -31,12 +31,12 @@ public class Cook implements Runnable {
         this.isWorking = false;
         this.stopped = false;
         this.cookId = "Cook" + "_" + cookIdCounter.getAndIncrement();
-        log.info(cookId + " created");
         pizzaCompletableFuture = new CompletableFuture<>();
     }
 
     @Override
     public void run() {
+        isWorking = true;
         if (stopped) {
             try {
                 pizzaLatch.await();
@@ -58,7 +58,6 @@ public class Cook implements Runnable {
             this.pizza.getPizzaState().moveNextState();
         }
 
-        log.info("Cook has completed pizza: " + pizza);
         pizzaCompletableFuture.complete(pizza);
     }
 

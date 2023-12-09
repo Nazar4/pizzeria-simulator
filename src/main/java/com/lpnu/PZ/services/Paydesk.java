@@ -12,9 +12,9 @@ import java.util.Queue;
 
 @Getter
 public class Paydesk {
-    private Queue<Order> ordinaryQueue;
-    private Queue<Order> priorityQueue;
-    private List<Client> clients;
+    private final Queue<Order> ordinaryQueue;
+    private final Queue<Order> priorityQueue;
+    private final List<Client> clients;
 
     public Paydesk() {
         this.clients = new ArrayList<>();
