@@ -1,5 +1,6 @@
 package com.lpnu.PZ.domain;
 
+import com.lpnu.PZ.domain.pizza.state.PizzaState;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,7 @@ public class Cook implements Runnable {
     @Setter
     private boolean isWorking;
     private boolean stopped;
+    private PizzaState pizzaState;
     private final CountDownLatch pizzaLatch;
     private static final AtomicLong cookIdCounter = new AtomicLong(0);
 
@@ -31,6 +33,16 @@ public class Cook implements Runnable {
         this.isWorking = false;
         this.stopped = false;
         this.cookId = "Cook" + "_" + cookIdCounter.getAndIncrement();
+        pizzaCompletableFuture = new CompletableFuture<>();
+    }
+
+    public Cook(final PizzaState pizzaState) {
+        this.cookState = CookState.COOKING;
+        this.pizzaLatch = new CountDownLatch(1);
+        this.isWorking = false;
+        this.stopped = false;
+        this.cookId = "Cook" + "_" + cookIdCounter.getAndIncrement();
+        this.pizzaState = pizzaState;
         pizzaCompletableFuture = new CompletableFuture<>();
     }
 

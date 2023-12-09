@@ -4,6 +4,7 @@ import com.lpnu.PZ.domain.Cook;
 import com.lpnu.PZ.domain.Order;
 import com.lpnu.PZ.domain.OrderState;
 import com.lpnu.PZ.domain.Pizza;
+import com.lpnu.PZ.domain.pizza.state.PizzaState;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -67,6 +68,33 @@ public class Kitchen {
         });
     }
 
+    private CompletableFuture<Order> processPartialOrder(Order order) {
+        CompletableFuture<Order> orderCompletableFuture = new CompletableFuture<>();
+        List<CompletableFuture<Pizza>> pizzaFutures = new ArrayList<>();
+
+        order.setOrderState(OrderState.PREPARING_ORDER);
+        for (final Pizza pizza : order.getPizzas()) {
+//            CompletableFuture<Pizza> pizzaProcessingFuture = CompletableFuture.runAsync(() -> {
+                while (!pizza.isPrepared()) {
+                    Cook cook = getAvailableCookForOperation(pizza.getPizzaState());
+                    cook.setPizza(pizza);
+                    //maybe not run as a thread but just execute method
+                    this.cookThreadPool.submit(cook);
+                    pizzaFutures.add(cook.getPizzaCompletableFuture());
+                }
+//            });
+//            pizzaFutures.add(pizzaProcessingFuture);
+        }
+
+        return CompletableFuture.allOf(
+                pizzaFutures.toArray(new CompletableFuture[0])
+        ).thenApply(result -> {
+            order.setOrderState(OrderState.ORDER_FINISHED);
+            orderCompletableFuture.complete(order);
+            return order; // for chain
+        });
+    }
+
     private synchronized Cook getAvailableCook() {
         Optional<Cook> availableCookOptional;
         Cook availableCook;
@@ -93,6 +121,30 @@ public class Kitchen {
 
     public boolean hasAvailableCook() {
         return cooks.stream().anyMatch(cook -> !cook.isWorking());
+    }
+
+    private synchronized Cook getAvailableCookForOperation(final PizzaState operation) {
+        Optional<Cook> availableCookOptional;
+        Cook availableCook;
+
+        while (!Thread.currentThread().isInterrupted()) {
+            availableCookOptional = cooks.stream()
+                    .filter(cook -> !cook.isWorking() && cook.getCookOperation(operation))
+                    .findAny();
+
+            if (availableCookOptional.isPresent()) {
+                availableCook = availableCookOptional.get();
+                availableCook.setWorking(true);
+                return availableCook;
+            } else {
+                try {
+                    TimeUnit.MILLISECONDS.sleep(100);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        throw new IllegalStateException("Unhandled situation to recover");
     }
 
     public void shutdown() {
