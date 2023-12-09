@@ -6,16 +6,16 @@ public class DoneState extends PizzaState {
 
     public DoneState(final Pizza pizza) {
         super(pizza);
-        pizza.getLog().logEnd();
     }
 
     @Override
     public void moveNextState() {
+        this.pizza.getLog().logEnd();
         this.pizza.setPrepared(true);
     }
 
     @Override
     public double getCompletion() {
-        return 0.1;
+        return 0;
     }
 }

@@ -23,7 +23,7 @@ public class Cook implements Runnable {
     private boolean isWorking;
     private boolean stopped;
     private final CountDownLatch pizzaLatch;
-    private static AtomicLong cookIdCounter = new AtomicLong(0);
+    private static final AtomicLong cookIdCounter = new AtomicLong(0);
 
     public Cook() {
         this.cookState = CookState.COOKING;

@@ -6,12 +6,13 @@ import com.lpnu.PZ.utils.GlobalConstants;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.format.DateTimeFormatter;
+
 @Getter
 public class Pizza {
     private final PizzaType pizzaType;
     private PizzaState pizzaState;
-    private PizzaLog log;
-    @Setter
+    private final PizzaLog log;
     private double adjustedTimeToCreate;
     @Setter
     private boolean isPrepared;
@@ -19,6 +20,7 @@ public class Pizza {
     public Pizza(final PizzaType pizzaType) {
         this.pizzaType = pizzaType;
         this.isPrepared = false;
+        this.log = new PizzaLog();
         this.pizzaState = new AssemblingState(this);
     }
 
@@ -36,7 +38,9 @@ public class Pizza {
 
     @Override
     public String toString() {
-        return String.format("Pizza: %s, Price: %.2f, Prepare Time: %.2f minutes, Prepared: %b",
-                pizzaType.name(), pizzaType.getPrice(), this.getAdjustedTimeToCreate(), isPrepared);
+        return String.format("Pizza: %s, Price: %.2f, Prepare Time: %.2f minutes, Prepared: %b, startPreparing: %s, endPreparing: %s",
+                pizzaType.name(), pizzaType.getPrice(), this.getAdjustedTimeToCreate(), isPrepared,
+                log.getStartDate().format(DateTimeFormatter.ofPattern(GlobalConstants.PIZZA_LOG_FORMAT)),
+                log.getEndDate().format(DateTimeFormatter.ofPattern(GlobalConstants.PIZZA_LOG_FORMAT)));
     }
 }

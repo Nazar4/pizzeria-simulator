@@ -4,11 +4,9 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+@Getter
 public class PizzaLog {
-    @Getter
     private LocalDateTime startDate;
-
-    @Getter
     private LocalDateTime endDate;
 
     public void logStart() {

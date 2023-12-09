@@ -6,11 +6,11 @@ public class AssemblingState extends PizzaState {
 
     public AssemblingState(final Pizza pizza) {
         super(pizza);
-        pizza.getLog().logStart();
     }
 
     @Override
     public void moveNextState() {
+        this.pizza.getLog().logStart();
         this.pizza.changeState(new MakingDoughState(this.pizza));
     }
 

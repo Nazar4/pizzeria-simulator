@@ -15,6 +15,6 @@ public class BakingState extends PizzaState {
 
     @Override
     public double getCompletion() {
-        return 0.3;
+        return 0.4;
     }
 }
