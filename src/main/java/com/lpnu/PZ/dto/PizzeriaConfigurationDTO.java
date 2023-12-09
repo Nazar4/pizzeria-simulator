@@ -16,7 +16,7 @@ public class PizzeriaConfigurationDTO {
     private boolean intervalGenerationStrategy;
 
     public boolean isValid() {
-        return cooksNumber > 0 && cooksNumber < GlobalConstants.MAX_COOKS_NUMBER
+        return cooksNumber >= GlobalConstants.MIN_COOKS_NUMBER && cooksNumber < GlobalConstants.MAX_COOKS_NUMBER
                 && pizzasNumber > 0 && pizzasNumber < PizzaType.values().length
                 && minimalPizzaCreationTime > GlobalConstants.MINIMUM_TIME_TO_CREATE_PIZZA
                 && minimalPizzaCreationTime < GlobalConstants.MAXIMUM_TIME_TO_CREATE_PIZZA;

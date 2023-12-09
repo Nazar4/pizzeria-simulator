@@ -58,7 +58,11 @@ public class Cook implements Runnable {
                 throw new RuntimeException(e);
             }
         }
-        processPizzaOperation();
+        if (pizza.isPartialProcessing()) {
+            processPizzaOperation();
+        } else {
+            processPizza();
+        }
         isWorking = false;
     }
 

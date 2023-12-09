@@ -15,10 +15,10 @@ public class Order implements Comparable<Order> {
     private final OrderMode orderMode;
     private int priority;
 
-    public Order(List<Pizza> pizzas, boolean withPriority) {
+    public Order(final List<Pizza> pizzas, final boolean withPriority, final boolean partialProcessing) {
         this.pizzas = pizzas;
         this.orderState = OrderState.ORDER_ACCEPTED;
-        this.orderMode = OrderMode.PARTIAL_PROCESSING;
+        this.orderMode = partialProcessing ? OrderMode.PARTIAL_PROCESSING : OrderMode.FULL_PROCESSING;
         if (withPriority) {
             this.priority = ThreadLocalRandom.current().nextInt(1, 11);
         }
@@ -34,6 +34,7 @@ public class Order implements Comparable<Order> {
     public String toString() {
         StringBuilder orderString = new StringBuilder("Order{");
         orderString.append("state:").append(orderState)
+                .append(", orderMode:").append(orderMode)
                 .append(", totalPrice:").append(totalPrice)
                 .append(", priority:").append(priority)
                 .append(", pizzas:\n");

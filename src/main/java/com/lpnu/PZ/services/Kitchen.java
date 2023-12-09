@@ -6,6 +6,7 @@ import com.lpnu.PZ.domain.OrderMode;
 import com.lpnu.PZ.domain.OrderState;
 import com.lpnu.PZ.domain.Pizza;
 import com.lpnu.PZ.domain.pizza.state.CookOperation;
+import com.lpnu.PZ.utils.GlobalConstants;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,16 +32,13 @@ public class Kitchen {
         this.cookThreadPool = Executors.newFixedThreadPool(numberOfCooks);
         this.cooks = new ArrayList<>();
 
-        if (numberOfCooks > 5) {
+        if (numberOfCooks > GlobalConstants.MIN_COOKS_NUMBER) {
             for (int i = 0; i < numberOfCooks; i++) {
-                Cook cook = new Cook(CookOperation.values()[i % 5]);
+                Cook cook = new Cook(CookOperation.values()[i % GlobalConstants.MIN_COOKS_NUMBER]);
                 cooks.add(cook);
             }
         } else {
-            for (int i = 0; i < numberOfCooks; i++) {
-                Cook cook = new Cook();
-                cooks.add(cook);
-            }
+            throw new IllegalArgumentException(String.format("Number of cooks has to be at least 5, got %d", numberOfCooks));
         }
     }
 
@@ -106,7 +104,7 @@ public class Kitchen {
                 Cook cook = getAvailableCookForOperation(pizza.getPizzaState().getCookOperation());
                 cook.setPizza(pizza);
 
-                Future<?> future = this.cookThreadPool.submit(cook);
+                final Future<?> future = this.cookThreadPool.submit(cook);
                 try {
                     future.get(); // Wait for the cook task to complete
                 } catch (InterruptedException | ExecutionException e) {

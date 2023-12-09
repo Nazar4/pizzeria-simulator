@@ -16,10 +16,14 @@ public class Pizza {
     private double adjustedTimeToCreate;
     @Setter
     private boolean isPrepared;
+    @Setter
+    @Getter
+    private boolean partialProcessing;
 
     public Pizza(final PizzaType pizzaType) {
         this.pizzaType = pizzaType;
         this.isPrepared = false;
+        this.partialProcessing = false;
         this.log = new PizzaLog();
         this.pizzaState = new AssemblingState(this);
     }
