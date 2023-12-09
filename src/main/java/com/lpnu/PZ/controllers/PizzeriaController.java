@@ -1,18 +1,16 @@
 package com.lpnu.PZ.controllers;
 
+import com.lpnu.PZ.dto.CookDTO;
 import com.lpnu.PZ.dto.PizzeriaConfigurationDTO;
-import com.lpnu.PZ.services.Kitchen;
 import com.lpnu.PZ.services.Pizzeria;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class PizzeriaController {
@@ -30,6 +28,20 @@ public class PizzeriaController {
         else {
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    @GetMapping("/pizzeria/cooks")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> getCooks() {
+        List<CookDTO> cooks = getPizzeria().getCooks();
+        return ResponseEntity.ok(cooks);
+    }
+
+    @GetMapping("/pizzeria/cooks/{cookId}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> getCooks(@PathVariable(name = "cookId") final String cookId) {
+        Optional<CookDTO> cook = getPizzeria().getCookById(cookId);
+        return cook.isPresent() ? ResponseEntity.ok(cook.get()) : ResponseEntity.badRequest().build();
     }
 
     @PatchMapping("/pizzeria/cooks/{cookId}/stop")
