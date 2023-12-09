@@ -6,6 +6,7 @@ public class PreparingToppingsState extends PizzaState {
 
     public PreparingToppingsState(final Pizza pizza) {
         super(pizza);
+        this.cookOperation = CookOperation.PREPARE_TOPPINGS;
     }
 
     @Override
@@ -15,6 +16,6 @@ public class PreparingToppingsState extends PizzaState {
 
     @Override
     public double getCompletion() {
-        return 0.2;
+        return this.cookOperation.getCompletionPercent();
     }
 }

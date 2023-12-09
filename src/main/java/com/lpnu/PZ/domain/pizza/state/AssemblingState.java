@@ -6,6 +6,7 @@ public class AssemblingState extends PizzaState {
 
     public AssemblingState(final Pizza pizza) {
         super(pizza);
+        this.cookOperation = CookOperation.ASSEMBLING;
         this.pizza.getLog().logStart();
     }
 
@@ -16,6 +17,6 @@ public class AssemblingState extends PizzaState {
 
     @Override
     public double getCompletion() {
-        return 0.1;
+        return this.cookOperation.getCompletionPercent();
     }
 }

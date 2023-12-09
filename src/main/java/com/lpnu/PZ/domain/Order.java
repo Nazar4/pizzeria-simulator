@@ -8,17 +8,17 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @Getter
 public class Order implements Comparable<Order> {
-    @Setter
-    private List<Pizza> pizzas;
+    private final List<Pizza> pizzas;
     private final double totalPrice;
     @Setter
     private OrderState orderState;
-    private OrderMode orderMode;
+    private final OrderMode orderMode;
     private int priority;
 
     public Order(List<Pizza> pizzas, boolean withPriority) {
         this.pizzas = pizzas;
         this.orderState = OrderState.ORDER_ACCEPTED;
+        this.orderMode = OrderMode.PARTIAL_PROCESSING;
         if (withPriority) {
             this.priority = ThreadLocalRandom.current().nextInt(1, 11);
         }

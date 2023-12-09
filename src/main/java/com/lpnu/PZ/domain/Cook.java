@@ -1,5 +1,6 @@
 package com.lpnu.PZ.domain;
 
+import com.lpnu.PZ.domain.pizza.state.CookOperation;
 import com.lpnu.PZ.domain.pizza.state.PizzaState;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,7 +24,8 @@ public class Cook implements Runnable {
     @Setter
     private boolean isWorking;
     private boolean stopped;
-    private PizzaState pizzaState;
+    @Getter
+    private CookOperation cookOperation;
     private final CountDownLatch pizzaLatch;
     private static final AtomicLong cookIdCounter = new AtomicLong(0);
 
@@ -36,13 +38,13 @@ public class Cook implements Runnable {
         pizzaCompletableFuture = new CompletableFuture<>();
     }
 
-    public Cook(final PizzaState pizzaState) {
+    public Cook(final CookOperation cookOperation) {
         this.cookState = CookState.COOKING;
         this.pizzaLatch = new CountDownLatch(1);
         this.isWorking = false;
         this.stopped = false;
         this.cookId = "Cook" + "_" + cookIdCounter.getAndIncrement();
-        this.pizzaState = pizzaState;
+        this.cookOperation = cookOperation;
         pizzaCompletableFuture = new CompletableFuture<>();
     }
 
@@ -56,7 +58,7 @@ public class Cook implements Runnable {
                 throw new RuntimeException(e);
             }
         }
-        processPizza();
+        processPizzaOperation();
         isWorking = false;
     }
 
@@ -71,6 +73,15 @@ public class Cook implements Runnable {
         }
 
         pizzaCompletableFuture.complete(pizza);
+    }
+
+    public void processPizzaOperation() {
+        if (pizza == null) {
+            throw new IllegalStateException("Pizza must be set before processing.");
+        }
+
+        simulateProcessingTime(pizza.getAdjustedTimeToCreate() * this.pizza.getPizzaState().getCompletion());
+        this.pizza.getPizzaState().moveNextState();
     }
 
     private void simulateProcessingTime(double timeInSeconds) {
