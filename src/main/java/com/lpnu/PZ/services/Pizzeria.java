@@ -52,7 +52,7 @@ public class Pizzeria {
                     }
                 }
 
-                TimeUnit.MILLISECONDS.sleep(100);
+                TimeUnit.MILLISECONDS.sleep(1000);
             } catch (InterruptedException e) {
                 log.error("Error in order processing thread: {}", e.getMessage());
                 Thread.currentThread().interrupt();
@@ -60,13 +60,13 @@ public class Pizzeria {
         }
     }
 
-    public List<CookDTO> getCooks(){
+    public List<CookDTO> getCooks() {
         return kitchen.getCooks().stream()//
                 .map(x -> new CookDTO(x.getCookId(), x.getCookState()))//
                 .collect(Collectors.toList());
     }
 
-    public Optional<CookDTO> getCookById(String cookId){
+    public Optional<CookDTO> getCookById(String cookId) {
         return getCooks().stream()//
                 .filter(x -> x.getCookId().equals(cookId))//
                 .findFirst();
