@@ -33,14 +33,6 @@ public class Pizzeria {
         runPizzeria();
     }
 
-    public List<CookDTO> getCooks(){
-        return kitchen.getCooks().stream().map(x -> new CookDTO(x.getCookId(),x.getCookState())).collect(Collectors.toList());
-    }
-
-    public Optional<CookDTO> getCookById(String cookId){
-        return getCooks().stream().filter(x -> x.getCookId().equals(cookId)).findFirst();
-    }
-
     public void runPizzeria() {
         clientGenerationStrategy.generateClientWithInterval();
 
@@ -60,13 +52,26 @@ public class Pizzeria {
                     }
                 }
 
-                TimeUnit.MILLISECONDS.sleep(100);
+                TimeUnit.MILLISECONDS.sleep(1000);
             } catch (InterruptedException e) {
                 log.error("Error in order processing thread: {}", e.getMessage());
                 Thread.currentThread().interrupt();
             }
         }
     }
+
+    public List<CookDTO> getCooks() {
+        return kitchen.getCooks().stream()//
+                .map(x -> new CookDTO(x.getCookId(), x.getCookState()))//
+                .collect(Collectors.toList());
+    }
+
+    public Optional<CookDTO> getCookById(String cookId) {
+        return getCooks().stream()//
+                .filter(x -> x.getCookId().equals(cookId))//
+                .findFirst();
+    }
+
 
     public boolean stopCookById(String cookId) {
         return this.kitchen.stopCookById(cookId);

@@ -21,4 +21,9 @@ public class Paydesk {
         this.ordinaryQueue = new LinkedList<>();
         this.priorityQueue = new PriorityQueue<>();
     }
+
+    @Override
+    public String toString() {
+        return "Ordinary queue size: " + ordinaryQueue.size() + "\n" + "Priority queue size: " + priorityQueue.size();
+    }
 }

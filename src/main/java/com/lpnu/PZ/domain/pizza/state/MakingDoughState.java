@@ -6,6 +6,7 @@ public class MakingDoughState extends PizzaState {
 
     public MakingDoughState(final Pizza pizza) {
         super(pizza);
+        this.cookOperation = CookOperation.MAKING_DOUGH;
     }
 
     @Override
@@ -15,6 +16,6 @@ public class MakingDoughState extends PizzaState {
 
     @Override
     public double getCompletion() {
-        return 0.3;
+        return this.cookOperation.getCompletionPercent();
     }
 }

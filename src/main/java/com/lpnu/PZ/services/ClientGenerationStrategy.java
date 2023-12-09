@@ -63,15 +63,20 @@ public abstract class ClientGenerationStrategy {
     public Order generateRandomOrder() {
         int numberOfPizzas = ThreadLocalRandom.current().nextInt(1, GlobalConstants.MAXIMAL_NUMBER_OF_PIZZAS_PER_ORDER);
         List<Pizza> pizzas = new ArrayList<>();
+        boolean partialProcessing = ThreadLocalRandom.current().nextBoolean();
 
         for (int i = 0; i < numberOfPizzas; i++) {
             final PizzaType randomPizzaType = this.menu.get(ThreadLocalRandom.current().nextInt(menu.size()));
             final Pizza pizza = new Pizza(randomPizzaType);
+            if (partialProcessing) {
+                pizza.setPartialProcessing(true);
+            }
             pizza.setAdjustedTime(this.minimumTimeToCreatePizza);
             pizzas.add(pizza);
         }
 
-        return new Order(pizzas, ThreadLocalRandom.current().nextBoolean());
+        //optional second argument to Order constructor to differentiate between queues
+        return new Order(pizzas, ThreadLocalRandom.current().nextBoolean(), partialProcessing);
     }
 
     public void shutdown() {
