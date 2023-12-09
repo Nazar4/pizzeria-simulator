@@ -5,6 +5,7 @@ import com.lpnu.PZ.domain.Order;
 import com.lpnu.PZ.domain.OrderState;
 import com.lpnu.PZ.domain.Pizza;
 import com.lpnu.PZ.domain.pizza.state.PizzaState;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class Kitchen {
     private final ExecutorService cookThreadPool;
+    @Getter
     private final List<Cook> cooks;
 
     private static volatile Kitchen instance;

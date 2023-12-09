@@ -1,17 +1,20 @@
 package com.lpnu.PZ.services;
 
 import com.lpnu.PZ.domain.Order;
+import com.lpnu.PZ.dto.CookDTO;
 import com.lpnu.PZ.dto.PizzeriaConfigurationDTO;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.PriorityQueue;
+import java.util.List;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Component
 @NoArgsConstructor
@@ -28,6 +31,14 @@ public class Pizzeria {
                 : new IntervalGenerationStrategy(configuration.getPizzasNumber(), configuration.getMinimalPizzaCreationTime());
         this.orderProcessorThreadPool = Executors.newFixedThreadPool(2);
         runPizzeria();
+    }
+
+    public List<CookDTO> getCooks(){
+        return kitchen.getCooks().stream().map(x -> new CookDTO(x.getCookId(),x.getCookState())).collect(Collectors.toList());
+    }
+
+    public Optional<CookDTO> getCookById(String cookId){
+        return getCooks().stream().filter(x -> x.getCookId().equals(cookId)).findFirst();
     }
 
     public void runPizzeria() {
