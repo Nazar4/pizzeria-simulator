@@ -15,12 +15,10 @@ public class OrderDTO {
     private double totalPrice;
     private OrderState orderState;
     private OrderMode orderMode;
-    private int priority;
 
     public static OrderDTO mapToOrderDTO(final Order order) {
         final OrderDTO orderDTO = new OrderDTO();
         orderDTO.setTotalPrice(order.getTotalPrice());
-        orderDTO.setPriority(order.getPriority());
         orderDTO.setOrderState(order.getOrderState());
         orderDTO.setOrderMode(order.getOrderMode());
         orderDTO.setPizzas(order.getPizzas().stream().map(PizzaDTO::mapToPizzaDTO).toList());
