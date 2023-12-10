@@ -22,10 +22,10 @@ public class RandomGenerationStrategy extends ClientGenerationStrategy {
                     final Client client = generateClient();
                     addToAppropriateQueue(client);
 
-                    int sleepTime = ThreadLocalRandom.current().nextInt(GlobalConstants.RANDOM_BOTTOM_BOUND_TO_GENERATE_CLIENT,
+                    final int sleepTime = ThreadLocalRandom.current().nextInt(GlobalConstants.RANDOM_BOTTOM_BOUND_TO_GENERATE_CLIENT,
                             GlobalConstants.RANDOM_UPPER_BOUND_TO_GENERATE_CLIENT);
                     TimeUnit.SECONDS.sleep(sleepTime);
-                } catch (InterruptedException e) {
+                } catch (final InterruptedException e) {
                     log.error("Error in client generation thread: {}", e.getMessage());
                     Thread.currentThread().interrupt();
                 }

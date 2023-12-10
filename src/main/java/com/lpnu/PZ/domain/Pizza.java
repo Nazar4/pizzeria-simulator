@@ -17,7 +17,6 @@ public class Pizza {
     @Setter
     private boolean isPrepared;
     @Setter
-    @Getter
     private boolean partialProcessing;
 
     public Pizza(final PizzaType pizzaType) {
@@ -32,9 +31,9 @@ public class Pizza {
         this.pizzaState = state;
     }
 
-    public void setAdjustedTime(int userMinimumTime) {
+    public void setAdjustedTime(final int userMinimumTime) {
         if (userMinimumTime < GlobalConstants.MINIMUM_TIME_TO_CREATE_PIZZA) {
-            throw new IllegalArgumentException("Pizza cannot be created in less than 10 minutes");
+            throw new IllegalArgumentException("Pizza cannot be created in less than 10 seconds");
         }
 
         this.adjustedTimeToCreate = Math.round(pizzaType.getTimeComplexity() * userMinimumTime);

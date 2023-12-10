@@ -1,7 +1,6 @@
 package com.lpnu.PZ.domain;
 
 import com.lpnu.PZ.domain.pizza.state.CookOperation;
-import com.lpnu.PZ.domain.pizza.state.PizzaState;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;

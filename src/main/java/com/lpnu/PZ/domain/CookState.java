@@ -9,7 +9,7 @@ public enum CookState {
 
     private final String displayValue;
 
-    CookState(String displayValue) {
+    CookState(final String displayValue) {
         this.displayValue = displayValue;
     }
 

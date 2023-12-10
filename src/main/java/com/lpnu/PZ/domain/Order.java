@@ -32,7 +32,7 @@ public class Order implements Comparable<Order> {
 
     @Override
     public String toString() {
-        StringBuilder orderString = new StringBuilder("Order{");
+        StringBuilder orderString = new StringBuilder("Order {");
         orderString.append("state:").append(orderState)
                 .append(", orderMode:").append(orderMode)
                 .append(", totalPrice:").append(totalPrice)

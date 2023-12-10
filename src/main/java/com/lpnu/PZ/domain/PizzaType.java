@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import java.util.Arrays;
 
+@Getter
 public enum PizzaType {
     MARGHERITA(1, 250),
     PEPPERONI(1.5, 200),
@@ -17,12 +18,10 @@ public enum PizzaType {
     FOUR_CHEESE(1.25, 255),
     SPINACH_ARTICHOKE(1.6, 150);
 
-    @Getter
     private final double timeComplexity;
-    @Getter
     private final double price;
 
-    PizzaType(double timeComplexity, double price) {
+    PizzaType(final double timeComplexity, final double price) {
         this.timeComplexity = timeComplexity;
         this.price = price;
     }

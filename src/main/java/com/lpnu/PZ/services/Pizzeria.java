@@ -46,14 +46,14 @@ public class Pizzeria {
                 if (kitchen.hasAvailableCook()) { //to address backpressure issue
                     final Order order = queue.poll();
                     if (order != null) {
-                        CompletableFuture<Order> result = kitchen.processOrder(order);
+                        final CompletableFuture<Order> result = kitchen.processOrder(order);
 
                         result.thenAccept(res -> log.info("Order Processed: \n{}", res));
                     }
                 }
 
                 TimeUnit.MILLISECONDS.sleep(1000);
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                 log.error("Error in order processing thread: {}", e.getMessage());
                 Thread.currentThread().interrupt();
             }
@@ -66,18 +66,18 @@ public class Pizzeria {
                 .collect(Collectors.toList());
     }
 
-    public Optional<CookDTO> getCookById(String cookId) {
+    public Optional<CookDTO> getCookById(final String cookId) {
         return getCooks().stream()//
                 .filter(x -> x.getCookId().equals(cookId))//
                 .findFirst();
     }
 
 
-    public boolean stopCookById(String cookId) {
+    public boolean stopCookById(final String cookId) {
         return this.kitchen.stopCookById(cookId);
     }
 
-    public boolean resumeCookById(String cookId) {
+    public boolean resumeCookById(final String cookId) {
         return this.kitchen.resumeCookById(cookId);
     }
 

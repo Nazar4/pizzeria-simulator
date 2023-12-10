@@ -1,6 +1,5 @@
 package com.lpnu.PZ.dto;
 
-import com.lpnu.PZ.domain.Pizza;
 import com.lpnu.PZ.domain.PizzaType;
 import com.lpnu.PZ.utils.GlobalConstants;
 import lombok.Getter;

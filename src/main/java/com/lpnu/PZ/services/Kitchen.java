@@ -28,13 +28,13 @@ public class Kitchen {
 
     private static volatile Kitchen instance;
 
-    private Kitchen(int numberOfCooks) {
+    private Kitchen(final int numberOfCooks) {
         this.cookThreadPool = Executors.newFixedThreadPool(numberOfCooks);
         this.cooks = new ArrayList<>();
 
         if (numberOfCooks > GlobalConstants.MIN_COOKS_NUMBER) {
             for (int i = 0; i < numberOfCooks; i++) {
-                Cook cook = new Cook(CookOperation.values()[i % GlobalConstants.MIN_COOKS_NUMBER]);
+                final Cook cook = new Cook(CookOperation.values()[i % GlobalConstants.MIN_COOKS_NUMBER]);
                 cooks.add(cook);
             }
         } else {
@@ -42,7 +42,7 @@ public class Kitchen {
         }
     }
 
-    public static Kitchen getInstance(int numberOfCooks) {
+    public static Kitchen getInstance(final int numberOfCooks) {
         Kitchen result = instance;
         if (result != null) {
             return result;
@@ -59,12 +59,12 @@ public class Kitchen {
         if (OrderMode.PARTIAL_PROCESSING.equals(order.getOrderMode())) {
             return processPartialOrder(order);
         }
-        CompletableFuture<Order> orderCompletableFuture = new CompletableFuture<>();
-        List<CompletableFuture<Pizza>> pizzaFutures = new ArrayList<>();
+        final CompletableFuture<Order> orderCompletableFuture = new CompletableFuture<>();
+        final List<CompletableFuture<Pizza>> pizzaFutures = new ArrayList<>();
 
         order.setOrderState(OrderState.PREPARING_ORDER);
         for (final Pizza pizza : order.getPizzas()) {
-            Cook cook = getAvailableCook();
+            final Cook cook = getAvailableCook();
 
             cook.setPizza(pizza);
             this.cookThreadPool.submit(cook);
@@ -82,8 +82,8 @@ public class Kitchen {
     }
 
     private CompletableFuture<Order> processPartialOrder(final Order order) {
-        CompletableFuture<Order> orderCompletableFuture = new CompletableFuture<>();
-        List<CompletableFuture<Void>> pizzaFutures = new ArrayList<>();
+        final CompletableFuture<Order> orderCompletableFuture = new CompletableFuture<>();
+        final List<CompletableFuture<Void>> pizzaFutures = new ArrayList<>();
 
         order.setOrderState(OrderState.PREPARING_ORDER);
         for (final Pizza pizza : order.getPizzas()) {
@@ -99,15 +99,15 @@ public class Kitchen {
     }
 
     private void processPizzaPartially(final Pizza pizza, List<CompletableFuture<Void>> pizzaFutures) {
-        CompletableFuture<Void> pizzaCompletableFuture = CompletableFuture.runAsync(() -> {
+        final CompletableFuture<Void> pizzaCompletableFuture = CompletableFuture.runAsync(() -> {
             while (!pizza.isPrepared()) {
-                Cook cook = getAvailableCookForOperation(pizza.getPizzaState().getCookOperation());
+                final Cook cook = getAvailableCookForOperation(pizza.getPizzaState().getCookOperation());
                 cook.setPizza(pizza);
 
                 final Future<?> future = this.cookThreadPool.submit(cook);
                 try {
                     future.get(); // Wait for the cook task to complete
-                } catch (InterruptedException | ExecutionException e) {
+                } catch (final InterruptedException | ExecutionException e) {
                     Thread.currentThread().interrupt();
                     throw new RuntimeException("Error waiting for cook to process pizza", e);
                 }
@@ -173,7 +173,7 @@ public class Kitchen {
     }
 
     public boolean stopCookById(final String cookId) {
-        Optional<Cook> cookOptional = this.cooks.stream()
+        final Optional<Cook> cookOptional = this.cooks.stream()
                 .filter(cook -> cook.getCookId().equals(cookId))
                 .findFirst();
 
@@ -186,7 +186,7 @@ public class Kitchen {
     }
 
     public boolean resumeCookById(final String cookId) {
-        Optional<Cook> cookOptional = this.cooks.stream()
+        final Optional<Cook> cookOptional = this.cooks.stream()
                 .filter(cook -> cook.getCookId().equals(cookId))
                 .findFirst();
 

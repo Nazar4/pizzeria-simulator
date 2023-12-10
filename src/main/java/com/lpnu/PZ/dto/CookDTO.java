@@ -10,8 +10,7 @@ public class CookDTO {
     private String cookId;
     private CookState cookState;
 
-    public CookDTO(String cookId, CookState cookState)
-    {
+    public CookDTO(final String cookId, final CookState cookState) {
         this.cookId = cookId;
         this.cookState = cookState;
     }

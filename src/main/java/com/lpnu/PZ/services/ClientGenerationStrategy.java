@@ -33,7 +33,7 @@ public abstract class ClientGenerationStrategy {
     }
 
     public Client generateClient() {
-        Order order = generateRandomOrder();
+        final Order order = generateRandomOrder();
         return new Client("Client_" + (clientId++), order);
     }
 
@@ -49,8 +49,8 @@ public abstract class ClientGenerationStrategy {
         }
     }
 
-    private void fillMenuRandomly(int numberOfPizzas) {
-        List<PizzaType> allPizzaTypes = new ArrayList<>(List.of(PizzaType.values()));
+    private void fillMenuRandomly(final int numberOfPizzas) {
+        final List<PizzaType> allPizzaTypes = new ArrayList<>(List.of(PizzaType.values()));
 
         if (numberOfPizzas > allPizzaTypes.size()) {
             throw new IllegalArgumentException("Number of pizzas in the menu exceeds the available pizza types");
@@ -61,9 +61,9 @@ public abstract class ClientGenerationStrategy {
     }
 
     public Order generateRandomOrder() {
-        int numberOfPizzas = ThreadLocalRandom.current().nextInt(1, GlobalConstants.MAXIMAL_NUMBER_OF_PIZZAS_PER_ORDER);
-        List<Pizza> pizzas = new ArrayList<>();
-        boolean partialProcessing = ThreadLocalRandom.current().nextBoolean();
+        final int numberOfPizzas = ThreadLocalRandom.current().nextInt(1, GlobalConstants.MAXIMAL_NUMBER_OF_PIZZAS_PER_ORDER);
+        final List<Pizza> pizzas = new ArrayList<>();
+        final boolean partialProcessing = ThreadLocalRandom.current().nextBoolean();
 
         for (int i = 0; i < numberOfPizzas; i++) {
             final PizzaType randomPizzaType = this.menu.get(ThreadLocalRandom.current().nextInt(menu.size()));
