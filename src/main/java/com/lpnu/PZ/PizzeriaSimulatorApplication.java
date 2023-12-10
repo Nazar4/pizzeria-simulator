@@ -5,21 +5,16 @@ import com.lpnu.PZ.services.Pizzeria;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 
 @Slf4j
 @SpringBootApplication
 public class PizzeriaSimulatorApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(PizzeriaSimulatorApplication.class, args);
+        ConfigurableApplicationContext context = SpringApplication.run(PizzeriaSimulatorApplication.class, args);
 
-        final var pizzeriaConfigurationDTO = new PizzeriaConfigurationDTO();
-        pizzeriaConfigurationDTO.setCooksNumber(8);
-        pizzeriaConfigurationDTO.setPizzasNumber(8);
-        pizzeriaConfigurationDTO.setMinimalPizzaCreationTime(13);
-        pizzeriaConfigurationDTO.setIntervalGenerationStrategy(true);
-        Pizzeria pizzeria = new Pizzeria();
-        pizzeria.configurePizzeria(pizzeriaConfigurationDTO);
+        Pizzeria pizzeria = context.getBean(Pizzeria.class);
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             log.info("Shutting down gracefully...");

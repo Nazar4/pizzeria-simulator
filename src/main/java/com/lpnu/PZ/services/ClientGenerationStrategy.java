@@ -21,8 +21,7 @@ public abstract class ClientGenerationStrategy {
     private final Paydesk paydesk;
     @Getter
     private ExecutorService clientGeneratorThreadPool;
-
-    public static int clientId = 0;
+    private static int clientId = 0;
 
     public ClientGenerationStrategy(final int numberOfPizzasInMenu, final int minimumTimeToCreatePizza) {
         this.menu = new ArrayList<>();

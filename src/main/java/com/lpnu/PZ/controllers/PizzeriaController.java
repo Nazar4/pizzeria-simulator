@@ -1,5 +1,6 @@
 package com.lpnu.PZ.controllers;
 
+import com.lpnu.PZ.dto.ClientDTO;
 import com.lpnu.PZ.dto.CookDTO;
 import com.lpnu.PZ.dto.PizzeriaConfigurationDTO;
 import com.lpnu.PZ.services.Pizzeria;
@@ -23,36 +24,50 @@ public class PizzeriaController {
     public ResponseEntity<?> configurePizzeria(@RequestBody final PizzeriaConfigurationDTO configuration) {
         if (configuration.isValid()) {
             getPizzeria().configurePizzeria(configuration);
-            return ResponseEntity.ok(configuration);
+            return ResponseEntity.ok().build();
         }
         else {
             return ResponseEntity.badRequest().build();
         }
     }
 
+    @GetMapping("/pizzeria/clients")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<List<ClientDTO>> getClients() {
+        return ResponseEntity.ok(pizzeria.getAllClients());
+    }
+
+    @GetMapping("/pizzeria/clients/{clientName}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<ClientDTO> getClientByName(@PathVariable(name = "clientName") final String clientName) {
+        return getPizzeria().getClientByName(clientName)//
+                .map(client -> ResponseEntity.ok(ClientDTO.mapToClientDTO(client)))//
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @GetMapping("/pizzeria/cooks")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?> getCooks() {
-        List<CookDTO> cooks = getPizzeria().getCooks();
-        return ResponseEntity.ok(cooks);
+    public ResponseEntity<List<CookDTO>> getCooks() {
+        return ResponseEntity.ok(getPizzeria().getCooks());
     }
 
     @GetMapping("/pizzeria/cooks/{cookId}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?> getCooks(@PathVariable(name = "cookId") final String cookId) {
-        Optional<CookDTO> cook = getPizzeria().getCookById(cookId);
-        return cook.isPresent() ? ResponseEntity.ok(cook.get()) : ResponseEntity.badRequest().build();
+    public ResponseEntity<CookDTO> getCooks(@PathVariable(name = "cookId") final String cookId) {
+        return getPizzeria().getCookById(cookId)//
+                .map(ResponseEntity::ok)//
+                .orElse(ResponseEntity.badRequest().build());
     }
 
     @PostMapping("/pizzeria/cooks/{cookId}/stop")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?> stopCook(@PathVariable(name = "cookId") final String cookId) {
+    public ResponseEntity<Boolean> stopCook(@PathVariable(name = "cookId") final String cookId) {
         return getPizzeria().stopCookById(cookId) ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();
     }
 
     @PostMapping("/pizzeria/cooks/{cookId}/resume")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?> resumeCook(@PathVariable(name = "cookId") final String cookId) {
+    public ResponseEntity<Boolean> resumeCook(@PathVariable(name = "cookId") final String cookId) {
         return getPizzeria().resumeCookById(cookId) ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();
     }
 

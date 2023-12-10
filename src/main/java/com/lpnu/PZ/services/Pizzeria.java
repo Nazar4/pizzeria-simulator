@@ -1,7 +1,10 @@
 package com.lpnu.PZ.services;
 
+import com.lpnu.PZ.domain.Client;
 import com.lpnu.PZ.domain.Order;
+import com.lpnu.PZ.dto.ClientDTO;
 import com.lpnu.PZ.dto.CookDTO;
+import com.lpnu.PZ.dto.OrderDTO;
 import com.lpnu.PZ.dto.PizzeriaConfigurationDTO;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -60,15 +63,27 @@ public class Pizzeria {
         }
     }
 
+    public List<ClientDTO> getAllClients() {
+        return this.clientGenerationStrategy.getPaydesk().getClients().stream()//
+                .map(ClientDTO::mapToClientDTO)//
+                .collect(Collectors.toList());
+    }
+
+    public Optional<Client> getClientByName(final String clientName) {
+        return this.clientGenerationStrategy.getPaydesk().getClients().stream()//
+                .filter(client -> client.getClientName().equals(clientName))//
+                .findFirst();
+    }
+
     public List<CookDTO> getCooks() {
         return kitchen.getCooks().stream()//
-                .map(x -> new CookDTO(x.getCookId(), x.getCookState()))//
+                .map(CookDTO::mapToCookDTO)//
                 .collect(Collectors.toList());
     }
 
     public Optional<CookDTO> getCookById(final String cookId) {
         return getCooks().stream()//
-                .filter(x -> x.getCookId().equals(cookId))//
+                .filter(cook -> cook.getCookId().equals(cookId))//
                 .findFirst();
     }
 
