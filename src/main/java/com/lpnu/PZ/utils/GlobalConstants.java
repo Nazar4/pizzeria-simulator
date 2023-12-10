@@ -9,5 +9,6 @@ public class GlobalConstants {
     public static final int INTERVAL_TO_GENERATE_CLIENT = 15;
     public static final int RANDOM_BOTTOM_BOUND_TO_GENERATE_CLIENT = 10;
     public static final int RANDOM_UPPER_BOUND_TO_GENERATE_CLIENT = 21;
+    public static final int MAX_RETURN_CLIENTS = 40;
     public static final String PIZZA_LOG_FORMAT = "HH:mm:ss";
 }

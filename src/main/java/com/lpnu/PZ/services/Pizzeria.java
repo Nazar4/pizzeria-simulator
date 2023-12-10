@@ -19,6 +19,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static com.lpnu.PZ.utils.GlobalConstants.MAX_RETURN_CLIENTS;
+
 @Component
 @NoArgsConstructor
 @Slf4j
@@ -64,9 +66,11 @@ public class Pizzeria {
     }
 
     public List<ClientDTO> getAllClients() {
-        return this.clientGenerationStrategy.getPaydesk().getClients().stream()//
+        List<ClientDTO> clients = this.clientGenerationStrategy.getPaydesk().getClients().stream()//
                 .map(ClientDTO::mapToClientDTO)//
                 .collect(Collectors.toList());
+
+        return clients.subList(Math.max(clients.size() - MAX_RETURN_CLIENTS, 0), clients.size());
     }
 
     public Optional<Client> getClientByName(final String clientName) {

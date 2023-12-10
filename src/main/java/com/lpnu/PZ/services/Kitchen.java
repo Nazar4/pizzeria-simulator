@@ -32,7 +32,7 @@ public class Kitchen {
         this.cookThreadPool = Executors.newFixedThreadPool(numberOfCooks);
         this.cooks = new ArrayList<>();
 
-        if (numberOfCooks > GlobalConstants.MIN_COOKS_NUMBER) {
+        if (numberOfCooks >= GlobalConstants.MIN_COOKS_NUMBER) {
             for (int i = 0; i < numberOfCooks; i++) {
                 final Cook cook = new Cook(CookOperation.values()[i % GlobalConstants.MIN_COOKS_NUMBER]);
                 cooks.add(cook);
